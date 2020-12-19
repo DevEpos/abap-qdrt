@@ -2,24 +2,23 @@
 <abapGit version="v1.0.0" serializer="LCL_OBJECT_SICF" serializer_version="v1.0.0">
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
-   <URL>/sap/bc/zqdrt_srv/</URL>
+   <URL>/sap/zqdrt/rest/</URL>
    <ICFSERVICE>
-    <ICF_NAME>ZQDRT_SRV</ICF_NAME>
+    <ICF_NAME>REST</ICF_NAME>
     <HTTPCDE500>2</HTTPCDE500>
     <HTTPCDE401>2</HTTPCDE401>
-    <ICFBITMAP>00000000</ICFBITMAP>
     <HTTPCDELPAG>2</HTTPCDELPAG>
     <HTTPCDENFPAG>2</HTTPCDENFPAG>
-    <ORIG_NAME>zqdrt_srv</ORIG_NAME>
+    <ORIG_NAME>rest</ORIG_NAME>
    </ICFSERVICE>
    <ICFDOCU>
-    <ICF_NAME>ZQDRT_SRV</ICF_NAME>
+    <ICF_NAME>REST</ICF_NAME>
     <ICF_LANGU>E</ICF_LANGU>
-    <ICF_DOCU>Rest service for Quick Data Reporting Tool</ICF_DOCU>
+    <ICF_DOCU>REST Service for Quick Data Reporter</ICF_DOCU>
    </ICFDOCU>
    <ICFHANDLER_TABLE>
     <ICFHANDLER>
-     <ICF_NAME>ZQDRT_SRV</ICF_NAME>
+     <ICF_NAME>REST</ICF_NAME>
      <ICFORDER>01</ICFORDER>
      <ICFTYP>A</ICFTYP>
      <ICFHANDLER>ZCL_QDRT_REST_APP</ICFHANDLER>
