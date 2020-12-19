@@ -1,2 +1,2 @@
 # abap-qdrt
-ADT Backend for UI5 Quick Data Reporter
+ABAP Backend for UI5 Quick Data Reporter
