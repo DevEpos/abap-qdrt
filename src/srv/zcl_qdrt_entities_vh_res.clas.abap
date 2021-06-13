@@ -1,5 +1,5 @@
 "! <p class="shorttext synchronized" lang="en">Rest Resource for Value Helps</p>
-CLASS zcl_qdrt_res_vh DEFINITION
+CLASS zcl_qdrt_entities_vh_res DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC
@@ -21,7 +21,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_qdrt_res_vh IMPLEMENTATION.
+CLASS zcl_qdrt_entities_vh_res IMPLEMENTATION.
 
 
   METHOD if_rest_resource~get.
@@ -45,6 +45,7 @@ CLASS zcl_qdrt_res_vh IMPLEMENTATION.
                                option = COND #( WHEN filter CA '*+' THEN 'CP' ELSE 'EQ' )
                                low    = to_upper( filter ) ) ).
 
+    " TODO: copy necessary cds views into QDRT package
     SELECT
       FROM zsat_i_databaseentity
       FIELDS type,

@@ -3,10 +3,11 @@ CLASS zcl_qdrt_rest_app DEFINITION
   PUBLIC
   INHERITING FROM cl_rest_http_handler
   FINAL
-  CREATE PUBLIC .
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
-    METHODS if_rest_application~get_root_handler
+    METHODS:
+      if_rest_application~get_root_handler
         REDEFINITION.
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -20,14 +21,16 @@ CLASS zcl_qdrt_rest_app IMPLEMENTATION.
     DATA(router) = NEW cl_rest_router( ).
 
     router->attach(
-        iv_template      = '/data'
-        iv_handler_class = 'ZCL_QDRT_RES_DATA_MANAGER'
-    ).
+      iv_template      = '/'
+      iv_handler_class = 'ZCL_QDRT_REST_INFO_RES' ).
 
     router->attach(
-        iv_template      = '/entities/vh'
-        iv_handler_class = 'ZCL_QDRT_RES_VH'
-    ).
+      iv_template      = '/entities/{type}/{name}/dataPreview'
+      iv_handler_class = 'ZCL_QDRT_ENTITY_DATA_PREV_RES' ).
+
+    router->attach(
+      iv_template      = '/entities/vh'
+      iv_handler_class = 'ZCL_QDRT_ENTITIES_VH_RES' ).
 
     ro_root_handler = router.
   ENDMETHOD.
