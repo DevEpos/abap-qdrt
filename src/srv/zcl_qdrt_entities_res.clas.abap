@@ -1,5 +1,5 @@
 "! <p class="shorttext synchronized" lang="en">Rest Resource for Value Helps</p>
-CLASS zcl_qdrt_entities_vh_res DEFINITION
+CLASS zcl_qdrt_entities_res DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC
@@ -21,7 +21,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_qdrt_entities_vh_res IMPLEMENTATION.
+CLASS zcl_qdrt_entities_res IMPLEMENTATION.
 
 
   METHOD if_rest_resource~get.
@@ -47,14 +47,14 @@ CLASS zcl_qdrt_entities_vh_res IMPLEMENTATION.
 
     " TODO: copy necessary cds views into QDRT package
     SELECT
-      FROM zsat_i_databaseentity
+      FROM zqdrt_i_dbentity
       FIELDS type,
-             entityraw AS name,
+             rawentityid AS name,
              description,
              developmentpackage AS package_name
-      WHERE entity IN @filter_ranges
+      WHERE entityid IN @filter_ranges
       ORDER BY type,
-               entity
+               entityid
     INTO TABLE @DATA(result)
       UP TO @top ROWS.
 

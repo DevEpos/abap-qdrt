@@ -29,8 +29,8 @@ CLASS zcl_qdrt_rest_app IMPLEMENTATION.
       iv_handler_class = 'ZCL_QDRT_ENTITY_DATA_PREV_RES' ).
 
     router->attach(
-      iv_template      = '/entities/vh'
-      iv_handler_class = 'ZCL_QDRT_ENTITIES_VH_RES' ).
+      iv_template      = '/entities'
+      iv_handler_class = 'ZCL_QDRT_ENTITIES_RES' ).
 
     ro_root_handler = router.
   ENDMETHOD.
