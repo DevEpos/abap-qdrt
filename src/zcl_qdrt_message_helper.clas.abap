@@ -114,7 +114,7 @@ CLASS zcl_qdrt_message_helper IMPLEMENTATION.
       " try to print message of previous exception
       IF previous_exc IS BOUND.
         TRY.
-            DATA(previous_exc_msg) = CAST zif_sat_exception_message( previous_exc ).
+            DATA(previous_exc_msg) = CAST zif_qdrt_exception_message( previous_exc ).
             IF print_to_screen = abap_true.
               message = previous_exc_msg->print(
                 iv_msg_type     = message_type
