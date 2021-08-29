@@ -25,12 +25,24 @@ CLASS zcl_qdrt_rest_app IMPLEMENTATION.
       iv_handler_class = 'ZCL_QDRT_REST_INFO_RES' ).
 
     router->attach(
-      iv_template      = '/entities/{type}/{name}/dataPreview'
-      iv_handler_class = 'ZCL_QDRT_ENTITY_DATA_PREV_RES' ).
-
-    router->attach(
       iv_template      = '/entities'
       iv_handler_class = 'ZCL_QDRT_ENTITIES_RES' ).
+
+    router->attach(
+      iv_template      = '/entities/{type}/{name}/queryResult'
+      iv_handler_class = 'ZCL_QDRT_ENTITY_QRY_RESLT_RES' ).
+
+    router->attach(
+      iv_template      = '/entities/{type}/{name}/metadata'
+      iv_handler_class = 'ZCL_QDRT_ENTITY_METADATA_RES' ).
+
+    router->attach(
+      iv_template      = '/entities/{type}/{name}/variants'
+      iv_handler_class = 'ZCL_QDRT_ENTITY_VARIANT_RES' ).
+
+    router->attach(
+      iv_template      = '/entities/{type}/{name}/variants/{variant}'
+      iv_handler_class = 'ZCL_QDRT_ENTITY_VARIANT_RES' ).
 
     ro_root_handler = router.
   ENDMETHOD.

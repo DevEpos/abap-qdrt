@@ -1,5 +1,5 @@
-"! <p class="shorttext synchronized" lang="en">Data Preview provider for DB entities</p>
-CLASS zcl_qdrt_entity_data_prev_prov DEFINITION
+"! <p class="shorttext synchronized" lang="en">Data provider for DB entities</p>
+CLASS zcl_qdrt_entity_data_provider DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC.
@@ -25,7 +25,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_qdrt_entity_data_prev_prov IMPLEMENTATION.
+CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
 
 
   METHOD constructor.

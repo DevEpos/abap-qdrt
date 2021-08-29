@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_QDRT_MESSAGE_HELPER</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>Message Helper</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_MESSAGE_HELPER</CLSNAME>
+     <CMPNAME>PRINT_EXC_MESSAGE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Prints exception message</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_MESSAGE_HELPER</CLSNAME>
+     <CMPNAME>SET_MSG_VARS_FROM_TEXT</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Fills sy-msg variables from text</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>
