@@ -1,7 +1,6 @@
-"! <p class="shorttext synchronized" lang="en">Filter provider</p>
-CLASS zcl_qdrt_entity_fp DEFINITION
+"! <p class="shorttext synchronized" lang="en">Default Filter provider</p>
+CLASS zcl_qdrt_default_fp DEFINITION
   PUBLIC
-  FINAL
   CREATE PUBLIC .
 
   PUBLIC SECTION.
@@ -79,7 +78,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
+CLASS zcl_qdrt_default_fp IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -124,8 +123,7 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
 
     LOOP AT seltab_sql ASSIGNING FIELD-SYMBOL(<selfield>).
       " Handle incomplete options
-      DATA(fieldname) = COND #( WHEN <selfield>-sqlfieldname IS NOT INITIAL THEN <selfield>-sqlfieldname
-                                ELSE <selfield>-field ).
+      DATA(fieldname) = COND #( WHEN <selfield>-sqlfieldname IS NOT INITIAL THEN <selfield>-sqlfieldname ELSE <selfield>-field ).
       CHECK fieldname IS NOT INITIAL.
 
       " New fieldname
@@ -178,7 +176,7 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
 
     DATA: is_low_cp TYPE abap_bool.
 
-    DATA(l_sign) = COND #( WHEN original_sign = space THEN zif_qdrt_c_filter_ops=>including ELSE original_sign ).
+    DATA(l_sign) = COND #( WHEN original_sign = space THEN 'I' ELSE original_sign ).
 
     IF ( low CS '*' OR low CS '+') AND
        ( escape_char <> abap_true ).
@@ -211,14 +209,14 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
 
     DATA(where_clause) = NEW zcl_qdrt_sql_where_clause( ).
 
-    LOOP AT field_range ASSIGNING FIELD-SYMBOL(<field_selection>).
+    LOOP AT field_range ASSIGNING FIELD-SYMBOL(<ls_field_selection>).
 
       IF sy-tabix > 1.
         where_clause->start_new_line( 'AND' ).
       ENDIF.
 
       add_field_conditions(
-        field_sel    = <field_selection>
+        field_sel    = <ls_field_selection>
         where_clause = where_clause ).
 
     ENDLOOP.
@@ -232,7 +230,7 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
     DATA: fieldname_length       TYPE i,
           including_filter_count TYPE i.
 
-    FIELD-SYMBOLS: <option> TYPE ty_selopt.
+    FIELD-SYMBOLS: <ls_option> TYPE ty_selopt.
 
     " always use length of name to spare some spaces
     fieldname_length = strlen( field_sel-sqlfieldname ).
@@ -252,7 +250,7 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
 
     DATA(first_iteration) = abap_true.
 
-    LOOP AT field_sel-options ASSIGNING <option> WHERE sign = zif_qdrt_c_filter_ops=>including.
+    LOOP AT field_sel-options ASSIGNING <ls_option> WHERE sign = zif_qdrt_c_filter_ops=>including.
 
       IF first_iteration = abap_true.
         where_clause->add_word( '(' ).
@@ -264,7 +262,7 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
       add_std_condition(
         fieldname        = field_sel-sqlfieldname
         sql_function     = field_sel-sql_function
-        selopt           = <option>
+        selopt           = <ls_option>
         where_clause     = where_clause ).
       ADD 1 TO including_filter_count.
     ENDLOOP.
@@ -275,7 +273,7 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
 
     first_iteration = abap_true.
 
-    LOOP AT field_sel-options ASSIGNING <option> WHERE sign = zif_qdrt_c_filter_ops=>excluding.
+    LOOP AT field_sel-options ASSIGNING <ls_option> WHERE sign = zif_qdrt_c_filter_ops=>excluding.
       IF first_iteration = abap_false OR including_filter_count > 0.
         where_clause->add_word( 'AND' ).
       ENDIF.
@@ -283,7 +281,7 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
       add_std_condition(
         fieldname        = field_sel-sqlfieldname
         sql_function     = field_sel-sql_function
-        selopt           = <option>
+        selopt           = <ls_option>
         where_clause     = where_clause ).
     ENDLOOP.
 
@@ -337,10 +335,10 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
 
       " Add subquery clause
       SPLIT subquery AT cl_abap_char_utilities=>cr_lf INTO TABLE subquery_lines.
-      LOOP AT subquery_lines ASSIGNING FIELD-SYMBOL(<query_line>).
+      LOOP AT subquery_lines ASSIGNING FIELD-SYMBOL(<lv_query_line>).
         where_clause->start_new_line( )->add_word(
-          word        = <query_line>
-          word_length = strlen( <query_line> ) ).
+          word        = <lv_query_line>
+          word_length = strlen( <lv_query_line> ) ).
       ENDLOOP.
       " Close the subquery clause
       where_clause->add_word( ')' ).

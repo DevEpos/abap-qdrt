@@ -31,6 +31,8 @@ CLASS zcl_qdrt_sql_where_clause DEFINITION
           current_line        TYPE string,
           current_offset      TYPE i,
           default_line_offset TYPE i.
+    METHODS:
+      complete_current_line.
 ENDCLASS.
 
 
@@ -69,22 +71,20 @@ CLASS zcl_qdrt_sql_where_clause IMPLEMENTATION.
 
   METHOD start_new_line.
     IF current_line IS NOT INITIAL.
-      where_clause = VALUE #( BASE where_clause ( current_line ) ).
-      CLEAR current_line.
-      current_offset = default_line_offset.
+      complete_current_line( ).
+    ENDIF.
 
-      IF word IS NOT INITIAL.
-        current_line = word.
-        DATA(new_line_length) = strlen( word ).
+    IF word IS NOT INITIAL.
+      current_line = word.
+      DATA(new_line_length) = strlen( word ).
 
-        IF new_line_length > default_line_offset.
-          current_offset = new_line_length.
+      IF new_line_length > default_line_offset.
+        current_offset = new_line_length.
 
-          IF current_line+current_offset = space.
-            current_offset = current_offset + 1.
-          ENDIF.
-
+        IF current_line+current_offset = space.
+          current_offset = current_offset + 1.
         ENDIF.
+
       ENDIF.
     ENDIF.
 
@@ -97,5 +97,11 @@ CLASS zcl_qdrt_sql_where_clause IMPLEMENTATION.
     result = where_clause.
   ENDMETHOD.
 
+
+  METHOD complete_current_line.
+    where_clause = VALUE #( BASE where_clause ( current_line ) ).
+    CLEAR current_line.
+    current_offset = default_line_offset.
+  ENDMETHOD.
 
 ENDCLASS.

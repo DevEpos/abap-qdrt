@@ -10,16 +10,18 @@ CLASS zcl_qdrt_entity_qry_reslt_res DEFINITION
         REDEFINITION.
   PROTECTED SECTION.
   PRIVATE SECTION.
-    TYPES:
-      BEGIN OF ty_query_request,
-        filters TYPE zif_qdrt_filter_provider=>ty_filters,
-      END OF ty_query_request.
+    CONSTANTS:
+      BEGIN OF c_uri_params,
+        read_metadata TYPE string VALUE 'readMetadata',
+      END OF c_uri_params.
 
     DATA:
-      parsed_body TYPE ty_query_request.
+      query_config     TYPE zcl_qdrt_entity_data_provider=>ty_query_config,
+      is_read_metadata TYPE abap_bool.
 
     METHODS:
-      parse_body.
+      parse_body,
+      read_uri_params.
 ENDCLASS.
 
 
@@ -27,7 +29,7 @@ ENDCLASS.
 CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
 
   METHOD if_rest_resource~post.
-    " 1) parse body
+    read_uri_params( ).
     parse_body( ).
     mo_response->set_status( 200 ).
   ENDMETHOD.
@@ -41,10 +43,22 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
           json             = json_body
           pretty_name      = /ui2/cl_json=>pretty_mode-camel_case
         CHANGING
-          data             = parsed_body ).
+          data             = query_config ).
       " 2) convert filter values
       "  -> Automatic conversion to internal abap types not possible due to dynamic nature
       "     of the passed filters, e.g. Date will come as yyyy-mm-dd
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD read_uri_params.
+    DATA uri_param_value TYPE string.
+    uri_param_value = mo_request->get_uri_query_parameter(
+      iv_name    = c_uri_params-read_metadata
+      iv_encoded = abap_false ).
+
+    IF uri_param_value = 'true'.
+      is_read_metadata = abap_true.
     ENDIF.
   ENDMETHOD.
 

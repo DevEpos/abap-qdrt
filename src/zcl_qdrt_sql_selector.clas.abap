@@ -97,7 +97,7 @@ CLASS zcl_qdrt_sql_selector DEFINITION
       "! <p class="shorttext synchronized" lang="en">Determines existing line count with CTE</p>
       get_group_by_size_by_cte
         RETURNING
-          VALUE(rv_size) TYPE zqdrt_no_of_lines
+          VALUE(result) TYPE zqdrt_no_of_lines
         RAISING
           zcx_qdrt_sql_query_error,
       "! <p class="shorttext synchronized" lang="en">Creates count query with CTE</p>
@@ -278,7 +278,7 @@ CLASS zcl_qdrt_sql_selector IMPLEMENTATION.
           ORDER BY (order_by_clause)
           INTO CORRESPONDING FIELDS OF TABLE @et_data
           UP TO @max_size ROWS.
-      CATCH cx_root INTO data(sql_error).
+      CATCH cx_root INTO DATA(sql_error).
         RAISE EXCEPTION TYPE zcx_qdrt_selection_common
           EXPORTING
             previous = sql_error.
@@ -310,6 +310,18 @@ CLASS zcl_qdrt_sql_selector IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD get_group_by_size_by_cte.
+
+    DATA(count_query) = create_count_query_for_cte( ).
+    IF count_query IS INITIAL.
+      RETURN.
+    ENDIF.
+
+    count_query->get_result( max_size ).
+    count_query->get_single_value_result( IMPORTING result = result ).
+  ENDMETHOD.
+
+
   METHOD create_count_query_for_cte.
     DATA: sql_lines TYPE string_table,
           query     TYPE string.
@@ -328,34 +340,7 @@ CLASS zcl_qdrt_sql_selector IMPLEMENTATION.
       ( |SELECT COUNT(*) FROM +group_select| ) ).
     CONCATENATE LINES OF sql_lines INTO query SEPARATED BY cl_abap_char_utilities=>cr_lf.
 
-    result = NEW zcl_qdrt_sql_query_parser( query )->parse( ).
+    result = zcl_qdrt_sql_query_factory=>parse_query( query ).
   ENDMETHOD.
-
-
-  METHOD get_group_by_size_by_cte.
-
-    DATA(count_query) = create_count_query_for_cte( ).
-    CHECK count_query IS NOT INITIAL.
-
-*    zcl_dbbr_sql_query_exec=>execute_query(
-*      EXPORTING
-*        io_query              = lo_count_query
-*        iv_row_count          = max_size
-*        if_show_progress_text = abap_false
-*      IMPORTING
-*        et_data_info          = DATA(lt_data_info)
-*        ev_execution_time     = DATA(lv_exec_time)
-*        ev_message            = DATA(lv_message)
-*        ev_message_type       = DATA(lv_message_type)
-*        er_data               = DATA(lr_t_result) ).
-*
-*    zcl_dbbr_sql_query_exec=>get_single_value_from_result(
-*      EXPORTING
-*        it_result_info = lt_data_info
-*        ir_t_data      = lr_t_result
-*      IMPORTING
-*        ev_value       = rv_size ).
-  ENDMETHOD.
-
 
 ENDCLASS.

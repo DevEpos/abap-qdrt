@@ -22,25 +22,61 @@ INTERFACE zif_qdrt_ty_global
     "! <p class="shorttext synchronized" lang="en">Filter value</p>
     ty_filter_value         TYPE c LENGTH 132,
 
-    "! <p class="shorttext synchronized" lang="en">Metadata of column for Data Preview</p>
-    BEGIN OF ty_col_metadata,
-      name        TYPE string,
-      type        TYPE string,
-      length      TYPE int4,
-      decimals    TYPE decimals,
-      short_desc  TYPE string,
-      medium_desc TYPE string,
-      long_desc   TYPE string,
-      semantics   TYPE string,
-      unit_field  TYPE string,
-    END OF ty_col_metadata,
+    "! <p class="shorttext synchronized" lang="en">Field information</p>
+    BEGIN OF ty_field_info,
+      name               TYPE fieldname,
+      is_key             TYPE abap_bool,
+      datatype           TYPE dynptype,
+      decimals           TYPE decimals,
+      length             TYPE ddleng,
+      rollname           TYPE rollname,
+      domname            TYPE domname,
+      has_fix_values     TYPE abap_bool,
+      short_description  TYPE scrtext_s,
+      medium_description TYPE scrtext_m,
+      long_description   TYPE scrtext_l,
+      field_text         TYPE as4text,
+      has_value_help     TYPE abap_bool,
+      ref_field          TYPE fieldname,
+      ref_table          TYPE tabname,
+      checktable         TYPE tabname,
+      is_lowercase       TYPE abap_bool,
+    END OF ty_field_info,
+
+    "! <p class="shorttext synchronized" lang="en"></p>
+    BEGIN OF ty_field_metadata,
+      name               TYPE string,
+      is_key             TYPE abap_bool,
+      rollname           TYPE rollname,
+      type               TYPE string,
+      is_numeric         TYPE abap_bool,
+      is_total_possible  TYPE abap_bool,
+      max_length         TYPE i,
+      precision          TYPE i,
+      scale              TYPE i,
+      short_description  TYPE string,
+      medium_description TYPE string,
+      long_description   TYPE string,
+      fieldtext          TYPE string,
+      semantics          TYPE string,
+      unit_field         TYPE string,
+      has_value_help     TYPE abap_bool,
+      display_format     TYPE string,
+      value_help_type    TYPE string,
+    END OF ty_field_metadata,
 
     "! <p class="shorttext synchronized" lang="en">Table of column metadata</p>
-    ty_col_metadata_t TYPE STANDARD TABLE OF ty_col_metadata WITH EMPTY KEY,
+    ty_fields_metadata TYPE STANDARD TABLE OF ty_field_metadata WITH EMPTY KEY,
+
+    "! <p class="shorttext synchronized" lang="en">Metadata of DB entity</p>
+    BEGIN OF ty_entity_metadata,
+      fields     TYPE ty_fields_metadata,
+      parameters TYPE ty_fields_metadata,
+    END OF ty_entity_metadata,
 
     "! <p class="shorttext synchronized" lang="en">Data for Data Preview</p>
     BEGIN OF ty_data_preview,
-      col_metadata TYPE ty_col_metadata_t,
+      col_metadata TYPE ty_fields_metadata,
       data         TYPE REF TO data,
     END OF ty_data_preview,
 
@@ -94,6 +130,12 @@ INTERFACE zif_qdrt_ty_global
       value_list        TYPE ty_selopts,
     END OF ty_sql_query_param,
 
-    ty_sql_query_params TYPE STANDARD TABLE OF ty_sql_query_param WITH EMPTY KEY.
+    ty_sql_query_params TYPE STANDARD TABLE OF ty_sql_query_param WITH EMPTY KEY,
+
+    "! <p class="shorttext synchronized" lang="en">Result of SQL query</p>
+    BEGIN OF ty_sql_query_result,
+      data    TYPE REF TO data,
+      message TYPE string,
+    END OF ty_sql_query_result.
 
 ENDINTERFACE.
