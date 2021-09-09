@@ -27,12 +27,14 @@ CLASS zcl_qdrt_provider_factory IMPLEMENTATION.
 
 
   METHOD create_filter_converter.
-
+    result = NEW zcl_qdrt_default_fc( ).
   ENDMETHOD.
 
 
   METHOD create_entity_metadata.
-    result = SWITCH #( entity_type
+    DATA: metadata_provider TYPE REF TO zcl_qdrt_entity_metadata_base.
+
+    metadata_provider = SWITCH #( entity_type
 
       WHEN zif_qdrt_c_entity_types=>cds_view THEN
         NEW zcl_qdrt_cds_emp(
@@ -44,6 +46,11 @@ CLASS zcl_qdrt_provider_factory IMPLEMENTATION.
         NEW zcl_qdrt_table_emp(
           entity_type = entity_type
           entity_name = entity_name ) ).
+
+    IF metadata_provider IS NOT INITIAL.
+      metadata_provider->init( ).
+      result = metadata_provider.
+    ENDIF.
   ENDMETHOD.
 
 ENDCLASS.

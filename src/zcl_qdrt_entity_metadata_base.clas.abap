@@ -6,7 +6,10 @@ CLASS zcl_qdrt_entity_metadata_base DEFINITION
 
   PUBLIC SECTION.
     INTERFACES:
-      zif_qdrt_entity_metadata_prov ABSTRACT METHODS get_field_config get_metadata.
+      zif_qdrt_entity_metadata_prov ABSTRACT METHODS get_field_config get_metadata get_field_metadata.
+
+    METHODS:
+      init.
   PROTECTED SECTION.
     CONSTANTS:
       c_boolean_values TYPE string VALUE ' X-'.
@@ -45,6 +48,11 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
   METHOD constructor.
     me->entity_name = entity_name.
     me->entity_type = entity_type.
+  ENDMETHOD.
+
+
+  METHOD init.
+    read_fields_metadata( ).
   ENDMETHOD.
 
 

@@ -6,9 +6,6 @@ CLASS zcl_qdrt_table_data_selector DEFINITION
   CREATE PUBLIC.
 
   PUBLIC SECTION.
-
-    INTERFACES:
-      zif_qdrt_data_selector.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -16,11 +13,6 @@ ENDCLASS.
 
 
 CLASS zcl_qdrt_table_data_selector IMPLEMENTATION.
-
-
-  METHOD zif_qdrt_data_selector~select_data.
-
-  ENDMETHOD.
 
 
 ENDCLASS.

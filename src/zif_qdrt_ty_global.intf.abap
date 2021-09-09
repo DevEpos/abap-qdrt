@@ -22,6 +22,15 @@ INTERFACE zif_qdrt_ty_global
     "! <p class="shorttext synchronized" lang="en">Filter value</p>
     ty_filter_value         TYPE c LENGTH 132,
 
+    "! <p class="shorttext synchronized" lang="en">Type of field</p>
+    ty_field_type           TYPE c LENGTH 1,
+
+    "! <p class="shorttext synchronized" lang="en">Settings for query execution</p>
+    BEGIN OF ty_query_exec_settings,
+      max_rows TYPE i,
+      offset   TYPE i,
+    END OF ty_query_exec_settings,
+
     "! <p class="shorttext synchronized" lang="en">Field information</p>
     BEGIN OF ty_field_info,
       name               TYPE fieldname,

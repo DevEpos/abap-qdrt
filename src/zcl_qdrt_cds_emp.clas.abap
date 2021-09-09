@@ -8,7 +8,8 @@ CLASS zcl_qdrt_cds_emp DEFINITION
   PUBLIC SECTION.
     METHODS:
       zif_qdrt_entity_metadata_prov~get_field_config REDEFINITION,
-      zif_qdrt_entity_metadata_prov~get_metadata REDEFINITION.
+      zif_qdrt_entity_metadata_prov~get_metadata REDEFINITION,
+      zif_qdrt_entity_metadata_prov~get_field_metadata REDEFINITION.
   PROTECTED SECTION.
     METHODS:
       read_fields_metadata REDEFINITION.
@@ -33,17 +34,25 @@ ENDCLASS.
 
 CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
 
-  METHOD zif_qdrt_entity_metadata_prov~get_field_config.
 
+  METHOD zif_qdrt_entity_metadata_prov~get_metadata.
+    result = REF #( metadata ).
   ENDMETHOD.
 
 
-  METHOD zif_qdrt_entity_metadata_prov~get_metadata.
-    IF metadata IS INITIAL.
-      read_fields_metadata( ).
-    ENDIF.
+  METHOD zif_qdrt_entity_metadata_prov~get_field_config.
+    RETURN.
+  ENDMETHOD.
 
-    result = REF #( metadata ).
+
+  METHOD zif_qdrt_entity_metadata_prov~get_field_metadata.
+    CHECK metadata IS NOT INITIAL.
+
+    IF type = zif_qdrt_c_global=>c_field_types-normal_field.
+      result = VALUE #( metadata-fields[ name = to_lower( fieldname ) ] OPTIONAL ).
+    ELSEIF type = zif_qdrt_c_global=>c_field_types-parameter.
+      result = VALUE #( metadata-parameters[ name = to_lower( fieldname ) ] OPTIONAL ).
+    ENDIF.
   ENDMETHOD.
 
 

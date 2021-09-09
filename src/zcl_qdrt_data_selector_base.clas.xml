@@ -11,6 +11,14 @@
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
    </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_DATA_SELECTOR_BASE</CLSNAME>
+     <CMPNAME>GET_FROM_CLAUSE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Retrieves the FROM clause for the SQL select</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
   </asx:values>
  </asx:abap>
 </abapGit>

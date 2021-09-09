@@ -17,6 +17,7 @@ CLASS zcl_qdrt_sql_query_factory DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
     CLASS-METHODS:
+    "! <p class="shorttext synchronized" lang="en">Event handler for Query Data request</p>
       on_request_result
         FOR EVENT request_result OF zcl_qdrt_sql_query
         IMPORTING

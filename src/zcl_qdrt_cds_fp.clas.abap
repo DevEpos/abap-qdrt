@@ -33,7 +33,15 @@ CLASS zcl_qdrt_cds_fp IMPLEMENTATION.
 
 
   METHOD zif_qdrt_filter_provider~get_filter_string.
+    CHECK param_filters IS NOT INITIAL.
 
+    DATA(params) = REDUCE string(
+      INIT value = `` sep = ``
+      FOR param IN param_filters
+      NEXT value = |{ value }{ sep }{ param-field_name } = { cl_abap_dyn_prg=>quote( param-value ) }|
+           sep = |, { cl_abap_char_utilities=>cr_lf }    | ).
+
+    result =  VALUE #( ( |( { params } )| ) ).
 
   ENDMETHOD.
 

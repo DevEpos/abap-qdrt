@@ -3,9 +3,9 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_QDRT_DEFAULT_FP</CLSNAME>
+    <CLSNAME>ZCL_QDRT_DEFAULT_FC</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Default Filter provider</DESCRIPT>
+    <DESCRIPT>Default Filter Converter</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>

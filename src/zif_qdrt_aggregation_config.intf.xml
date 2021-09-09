@@ -13,15 +13,33 @@
    <DESCRIPTIONS>
     <SEOCOMPOTX>
      <CLSNAME>ZIF_QDRT_AGGREGATION_CONFIG</CLSNAME>
+     <CMPNAME>GET_GROUP_BY_CLAUSE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Returns order by clause for select</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_AGGREGATION_CONFIG</CLSNAME>
      <CMPNAME>GET_HAVING_CLAUSE</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Returns having clause for select</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZIF_QDRT_AGGREGATION_CONFIG</CLSNAME>
-     <CMPNAME>GET_ORDER_BY_CLAUSE</CMPNAME>
+     <CMPNAME>IS_EMPTY</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Returns order by clause for select</DESCRIPT>
+     <DESCRIPT>Returns &apos;X&apos; if no aggregation config is empty</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_AGGREGATION_CONFIG</CLSNAME>
+     <CMPNAME>IS_FIELD_IN_AGGR_EXPR</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Returns &apos;X&apos; if given field is grouped or aggregated</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_AGGREGATION_CONFIG</CLSNAME>
+     <CMPNAME>IS_FIELD_IN_HAVING_EXPR</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Returns &apos;X&apos; if given field exists in a HAVING Expr.</DESCRIPT>
     </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
