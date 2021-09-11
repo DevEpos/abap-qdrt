@@ -9,6 +9,7 @@ CLASS zcl_qdrt_entity_data_provider DEFINITION
       BEGIN OF ty_query_config,
         settings      TYPE zif_qdrt_ty_global=>ty_query_exec_settings,
         filters       TYPE zif_qdrt_filter_provider=>ty_filters,
+        parameters    TYPE zif_qdrt_filter_provider=>ty_filters,
         aggregations  TYPE zif_qdrt_aggregation_config=>ty_aggregation_config,
         sort_fields   TYPE zif_qdrt_sort_config=>ty_sort_fields,
         output_fields TYPE zif_qdrt_output_field_config=>ty_output_fields,
@@ -28,6 +29,12 @@ CLASS zcl_qdrt_entity_data_provider DEFINITION
       get_data
         RETURNING
           VALUE(result) TYPE REF TO data
+        RAISING
+          zcx_qdrt_selection_common,
+      "! <p class="shorttext synchronized" lang="en">Retrieves maximum row count</p>
+      get_max_rows
+        RETURNING
+          VALUE(result) TYPE zqdrt_no_of_lines
         RAISING
           zcx_qdrt_selection_common.
   PROTECTED SECTION.
@@ -67,18 +74,19 @@ CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
     result = data_selector->select_data( exec_settings ).
   ENDMETHOD.
 
+  METHOD get_max_rows.
+    result = data_selector->get_max_count( ).
+  ENDMETHOD.
+
 
   METHOD init_data_selector.
     DATA: filter_provider TYPE REF TO zif_qdrt_filter_provider.
-
-    DATA(field_filters) = query_config-filters.
-    DELETE field_filters WHERE field_name CP |{ zif_qdrt_c_global=>c_param_filter_prefix }*|.
-
 
     DATA(metadata_provider) = zcl_qdrt_provider_factory=>create_entity_metadata(
       entity_name = entity_name
       entity_type = entity_type ).
 
+    DATA(field_filters) = query_config-filters.
     DATA(filter_converter) = zcl_qdrt_provider_factory=>create_filter_converter( ).
     filter_converter->convert(
       EXPORTING
@@ -96,9 +104,7 @@ CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
 
       WHEN zif_qdrt_c_entity_types=>cds_view.
 
-        DATA(param_filters) = query_config-filters.
-        DELETE param_filters WHERE field_name NP |{ zif_qdrt_c_global=>c_param_filter_prefix }*|.
-
+        DATA(param_filters) = query_config-parameters.
         filter_converter->convert(
           EXPORTING
             metadata_provider = metadata_provider
@@ -108,12 +114,13 @@ CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
         result = NEW zcl_qdrt_cds_data_selector(
           name                  = entity_name
           type                  = entity_type
+          metadata_provider     = metadata_provider
           aggregation_config    = aggregation_config
           sort_config           = sort_config
           output_field_config   = output_fields_config
           filter_provider       = filter_provider
           param_filter_provider = COND #( WHEN param_filters IS NOT INITIAL THEN
-                                            NEW zcl_qdrt_cds_fp( param_filters ) ) ).
+                                            NEW zcl_qdrt_cds_parameter_fp( param_filters ) ) ).
 
       WHEN zif_qdrt_c_entity_types=>database_table OR
            zif_qdrt_c_entity_types=>view.
@@ -121,6 +128,7 @@ CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
         result = NEW zcl_qdrt_table_data_selector(
           name                = entity_name
           type                = entity_type
+          metadata_provider   = metadata_provider
           aggregation_config  = aggregation_config
           sort_config         = sort_config
           output_field_config = output_fields_config

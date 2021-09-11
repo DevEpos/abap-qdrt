@@ -105,13 +105,20 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
           ( field  = <field_filter>-field_name
             sign   = COND #( WHEN <filter_range>-exclude = abap_true THEN zif_qdrt_c_filter_ops=>excluding
                              ELSE zif_qdrt_c_filter_ops=>including )
-            option = zif_qdrt_c_filter_ops=>equals
-            low    = <filter_item>-key ) ).
+            option = <filter_range>-operation
+            low    = <filter_range>-value1
+            high   = <filter_range>-value2 ) ).
       ENDLOOP.
     ENDLOOP.
 
+    result = create_where( seltab ).
+
   ENDMETHOD.
 
+
+  METHOD zif_qdrt_filter_provider~is_empty.
+    result = xsdbool( field_filters IS INITIAL ).
+  ENDMETHOD.
 
 
   METHOD create_where.
@@ -262,10 +269,10 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
       ENDIF.
 
       add_std_condition(
-        fieldname        = field_sel-sqlfieldname
-        sql_function     = field_sel-sql_function
-        selopt           = <option>
-        where_clause     = where_clause ).
+        fieldname    = field_sel-sqlfieldname
+        sql_function = field_sel-sql_function
+        selopt       = <option>
+        where_clause = where_clause ).
       ADD 1 TO including_filter_count.
     ENDLOOP.
 
@@ -281,10 +288,10 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
       ENDIF.
       CLEAR first_iteration.
       add_std_condition(
-        fieldname        = field_sel-sqlfieldname
-        sql_function     = field_sel-sql_function
-        selopt           = <option>
-        where_clause     = where_clause ).
+        fieldname    = field_sel-sqlfieldname
+        sql_function = field_sel-sql_function
+        selopt       = <option>
+        where_clause = where_clause ).
     ENDLOOP.
 
   ENDMETHOD.
@@ -421,11 +428,13 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
     ENDIF.
 
     add_fieldname_to_cond(
-      EXPORTING fieldname    = fieldname
-                sql_function = sql_function
-                where_clause = where_clause
-      CHANGING  low_val      = low_val
-                high_val     = high_val ).
+      EXPORTING
+        fieldname    = fieldname
+        sql_function = sql_function
+        where_clause = where_clause
+      CHANGING
+        low_val      = low_val
+        high_val     = high_val ).
 
 
 *.. TODO: If Between is active comparator and sql function is supplied
@@ -461,10 +470,10 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
 
         zcl_qdrt_wildcard_pattern_conv=>conv_sap_to_sql_pattern(
           EXPORTING
-            sap_pattern    = low_val
+            sap_pattern   = low_val
           IMPORTING
-            sql_pattern    = sql_pattern
-            escape_needed  = is_escape_needed ).
+            sql_pattern   = sql_pattern
+            escape_needed = is_escape_needed ).
 
         low_val = sql_pattern.
 
@@ -493,5 +502,6 @@ CLASS zcl_qdrt_entity_fp IMPLEMENTATION.
         where_clause->add_word( CONV #( low_val ) ).
     ENDCASE.
   ENDMETHOD.
+
 
 ENDCLASS.

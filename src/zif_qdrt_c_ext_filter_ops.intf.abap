@@ -2,14 +2,15 @@
 INTERFACE zif_qdrt_c_ext_filter_ops
   PUBLIC .
 
-  CONSTANTS contains TYPE string VALUE 'Contains'.
-  CONSTANTS starts_with TYPE string VALUE 'StartsWith'.
-  CONSTANTS ends_with TYPE string VALUE 'EndsWith'.
-  CONSTANTS between TYPE string VALUE 'BT'.
-  CONSTANTS equals TYPE string VALUE 'EQ'.
-  CONSTANTS greater_equals TYPE string VALUE 'GE'.
-  CONSTANTS greater_than TYPE string VALUE 'GT'.
-  CONSTANTS lesser_equal TYPE string VALUE 'LE'.
-  CONSTANTS lesser_than TYPE string VALUE 'LT'.
-  CONSTANTS empty TYPE string VALUE 'Empty'.
+  CONSTANTS:
+    contains       TYPE string VALUE 'Contains',
+    starts_with    TYPE string VALUE 'StartsWith',
+    ends_with      TYPE string VALUE 'EndsWith',
+    between        TYPE string VALUE 'BT',
+    equals         TYPE string VALUE 'EQ',
+    greater_equals TYPE string VALUE 'GE',
+    greater_than   TYPE string VALUE 'GT',
+    lesser_equal   TYPE string VALUE 'LE',
+    lesser_than    TYPE string VALUE 'LT',
+    empty          TYPE string VALUE 'Empty'.
 ENDINTERFACE.

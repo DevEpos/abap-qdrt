@@ -21,16 +21,26 @@ CLASS zcl_qdrt_entity_qry_reslt_res DEFINITION
       END OF c_uri_attributes.
 
     DATA:
-      query_config     TYPE zcl_qdrt_entity_data_provider=>ty_query_config,
-      entity_name      TYPE zif_qdrt_ty_global=>ty_entity_name,
-      entity_type      TYPE zif_qdrt_ty_global=>ty_entity_type,
-      is_read_metadata TYPE abap_bool.
+      query_config TYPE zcl_qdrt_entity_data_provider=>ty_query_config,
+      entity_name  TYPE zif_qdrt_ty_global=>ty_entity_name,
+      entity_type  TYPE zif_qdrt_ty_global=>ty_entity_type,
+
+      BEGIN OF query_result,
+        rows     TYPE REF TO data,
+        max_rows TYPE zqdrt_no_of_lines,
+        metadata TYPE REF TO data,
+      END OF query_result.
 
     METHODS:
       parse_body,
       read_uri_params
         RAISING
-          zcx_qdrt_rest_error.
+          zcx_qdrt_rest_error,
+      execute_selection
+        RAISING
+          zcx_qdrt_appl_error,
+      retrieve_metadata,
+      set_response.
 ENDCLASS.
 
 
@@ -50,15 +60,15 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
     parse_body( ).
 
     TRY.
-        DATA(data_provider) = NEW zcl_qdrt_entity_data_provider(
-          name         = entity_name
-          type         = entity_type
-          query_config = query_config ).
-        DATA(query_result) = data_provider->get_data( ).
-      CATCH zcx_qdrt_appl_error.
+        execute_selection( ).
+        retrieve_metadata( ).
+        set_response( ).
+      CATCH zcx_qdrt_appl_error INTO DATA(appl_error).
+        mo_response->set_status( cl_rest_status_code=>gc_client_error_bad_request ).
+        mo_response->set_reason( appl_error->get_message( ) ).
+        RETURN.
     ENDTRY.
 
-    mo_response->set_status( 200 ).
   ENDMETHOD.
 
 
@@ -76,15 +86,6 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
 
 
   METHOD read_uri_params.
-    DATA uri_param_value TYPE string.
-    uri_param_value = mo_request->get_uri_query_parameter(
-      iv_name    = c_uri_params-read_metadata
-      iv_encoded = abap_false ).
-
-    IF uri_param_value = 'true'.
-      is_read_metadata = abap_true.
-    ENDIF.
-
     entity_name = to_upper( mo_request->get_uri_attribute(
       iv_name    = c_uri_attributes-name
       iv_encoded = abap_false ) ).
@@ -98,6 +99,52 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
     zcl_qdrt_rest_req_util=>check_empty_uri_attribute(
       uri_attribute = c_uri_attributes-type
       value         = entity_type ).
+  ENDMETHOD.
+
+
+  METHOD execute_selection.
+    FIELD-SYMBOLS:
+      <result_rows> TYPE ANY TABLE.
+
+    DATA(data_provider) = NEW zcl_qdrt_entity_data_provider(
+      name         = entity_name
+      type         = entity_type
+      query_config = query_config ).
+
+    IF query_config-settings-no_data_select = abap_false.
+      query_result-rows = data_provider->get_data( ).
+    ENDIF.
+
+    IF query_config-settings-determine_max_rows = abap_true.
+      query_result-max_rows = data_provider->get_max_rows( ).
+    ENDIF.
+
+  ENDMETHOD.
+
+
+  METHOD retrieve_metadata.
+    CHECK query_config-settings-read_metadata = abap_true.
+
+    DATA(entity_metadata_provider) = zcl_qdrt_provider_factory=>create_entity_metadata(
+      entity_name = entity_name
+      entity_type = entity_type ).
+
+    IF entity_metadata_provider IS BOUND.
+      query_result-metadata = entity_metadata_provider->get_metadata( ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD set_response.
+    DATA(json) = /ui2/cl_json=>serialize(
+      data          = query_result
+      compress      = abap_true
+      pretty_name   = /ui2/cl_json=>pretty_mode-low_case
+      name_mappings = VALUE #(
+        ( abap = 'max_rows' json = 'maxRows' ) ) ).
+
+    mo_response->create_entity( )->set_string_data( json ).
+    mo_response->set_status( cl_rest_status_code=>gc_success_ok ).
   ENDMETHOD.
 
 ENDCLASS.

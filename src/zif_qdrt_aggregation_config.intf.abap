@@ -4,14 +4,13 @@ INTERFACE zif_qdrt_aggregation_config
 
   TYPES:
     BEGIN OF ty_aggregation_expression,
-      column_key TYPE fieldname,
-      function   TYPE string,
+      field_name TYPE fieldname,
     END OF ty_aggregation_expression,
 
     ty_aggregation_expressions TYPE STANDARD TABLE OF ty_aggregation_expression WITH EMPTY KEY,
 
     BEGIN OF ty_having_expression,
-      column_key TYPE fieldname,
+      field_name TYPE fieldname,
       function   TYPE string,
       operation  TYPE string,
       value1     TYPE string,

@@ -30,5 +30,10 @@ INTERFACE zif_qdrt_filter_provider
     "! <p class="shorttext synchronized" lang="en">Converts all filters to a where condition</p>
     get_filter_string
       RETURNING
-        VALUE(result) TYPE string_table.
+        VALUE(result) TYPE string_table,
+
+    "! <p class="shorttext synchronized" lang="en">Returns 'X' if no filters exist</p>
+    is_empty
+      RETURNING
+        VALUE(result) TYPE abap_bool.
 ENDINTERFACE.

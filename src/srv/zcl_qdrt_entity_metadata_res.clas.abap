@@ -76,7 +76,7 @@ CLASS zcl_qdrt_entity_metadata_res IMPLEMENTATION.
           reason = |No metadata provider found for type '{ entity_type }'|.
     ENDIF.
 
-    IF result->exists( ) = abap_false.
+    IF result->entity_exists( ) = abap_false.
       RAISE EXCEPTION TYPE zcx_qdrt_rest_error
         EXPORTING
           status = cl_rest_status_code=>gc_client_error_not_found

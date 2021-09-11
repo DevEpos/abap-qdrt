@@ -27,8 +27,11 @@ INTERFACE zif_qdrt_ty_global
 
     "! <p class="shorttext synchronized" lang="en">Settings for query execution</p>
     BEGIN OF ty_query_exec_settings,
-      max_rows TYPE i,
-      offset   TYPE i,
+      max_rows           TYPE i,
+      offset             TYPE i,
+      read_metadata      TYPE abap_bool,
+      determine_max_rows TYPE abap_bool,
+      no_data_select     TYPE abap_bool,
     END OF ty_query_exec_settings,
 
     "! <p class="shorttext synchronized" lang="en">Field information</p>

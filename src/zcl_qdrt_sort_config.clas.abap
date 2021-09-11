@@ -30,6 +30,17 @@ CLASS zcl_qdrt_sort_config IMPLEMENTATION.
 
 
   METHOD zif_qdrt_sort_config~get_order_by_clause.
+    FIELD-SYMBOLS:
+      <sort_line> TYPE string.
+
+    LOOP AT sort_fields ASSIGNING FIELD-SYMBOL(<sort_field>).
+      IF <sort_line> IS ASSIGNED.
+        <sort_line> = |{ <sort_line> },|.
+      ENDIF.
+
+      APPEND INITIAL LINE TO result ASSIGNING <sort_line>.
+      <sort_line> = |{ <sort_field>-field_name } { <sort_field>-sort_direction }|.
+    ENDLOOP.
 
   ENDMETHOD.
 

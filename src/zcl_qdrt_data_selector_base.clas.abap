@@ -11,6 +11,7 @@ CLASS zcl_qdrt_data_selector_base DEFINITION
     DATA:
       entity_name         TYPE zif_qdrt_ty_global=>ty_entity_name,
       entity_type         TYPE zif_qdrt_ty_global=>ty_entity_type,
+      metadata_provider   TYPE REF TO zif_qdrt_entity_metadata_prov,
       filter_provider     TYPE REF TO zif_qdrt_filter_provider,
       sort_config         TYPE REF TO zif_qdrt_sort_config,
       output_field_config TYPE REF TO zif_qdrt_output_field_config,
@@ -23,6 +24,7 @@ CLASS zcl_qdrt_data_selector_base DEFINITION
         IMPORTING
           name                TYPE zif_qdrt_ty_global=>ty_entity_name
           type                TYPE zif_qdrt_ty_global=>ty_entity_type
+          metadata_provider   TYPE REF TO zif_qdrt_entity_metadata_prov
           filter_provider     TYPE REF TO zif_qdrt_filter_provider
           output_field_config TYPE REF TO zif_qdrt_output_field_config
           sort_config         TYPE REF TO zif_qdrt_sort_config
@@ -55,12 +57,31 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
 
     ASSIGN query_result->* TO <query_result>.
     sql_selector->select_data( IMPORTING result = <query_result> ).
+
+    result = query_result.
+  ENDMETHOD.
+
+
+  METHOD zif_qdrt_data_selector~get_max_count.
+    DATA:
+      count_result TYPE REF TO data.
+
+    prepare_select( ).
+
+    IF aggregation_config->is_empty( ) = abap_false.
+      create_result_table( ).
+      CREATE DATA count_result LIKE query_result.
+      result = sql_selector->determine_size_for_group_by( count_result ).
+    ELSE.
+      result = sql_selector->determine_size( ).
+    ENDIF.
   ENDMETHOD.
 
 
   METHOD constructor.
     me->entity_name = name.
     me->entity_type = type.
+    me->metadata_provider = metadata_provider.
     me->filter_provider = filter_provider.
     me->output_field_config = output_field_config.
     me->aggregation_config = aggregation_config.
@@ -69,6 +90,10 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
 
 
   METHOD prepare_select.
+    CHECK sql_selector IS INITIAL.
+
+    output_field_config->set_use_count_field( xsdbool( aggregation_config->is_empty( ) = abap_false ) ).
+
     sql_selector = zcl_qdrt_sql_selector=>create(
       select_clause   = output_field_config->get_select_clause( )
       from_clause     = get_from_clause( )
@@ -85,7 +110,35 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
 
 
   METHOD create_result_table.
+    FIELD-SYMBOLS: <lt_table>      TYPE STANDARD TABLE,
+                   <lt_table_temp> TYPE STANDARD TABLE.
+    DATA: tab_components TYPE abap_component_tab .
+
+    CHECK query_result IS INITIAL.
+
+    LOOP AT metadata_provider->get_fields_metadata( ) ASSIGNING FIELD-SYMBOL(<field_metadata>).
+      CHECK output_field_config->is_output_field( CONV #( <field_metadata>-name ) ).
+
+      tab_components = VALUE #( BASE tab_components
+        ( name = to_upper( <field_metadata>-name )
+          type = CAST #( cl_abap_typedescr=>describe_by_name( |{ entity_name }-{ <field_metadata>-name }| ) ) ) ).
+    ENDLOOP.
+
+    IF aggregation_config->is_empty( ) = abap_false.
+      tab_components = VALUE #( BASE tab_components
+       ( name = zif_qdrt_c_global=>c_custom_field_names-line_index
+         type = CAST #( cl_abap_typedescr=>describe_by_data( VALUE zqdrt_no_of_lines( ) ) ) ) ).
+    ENDIF.
+
+    DATA(dyn_struct_descr) = cl_abap_structdescr=>get(
+      p_components = tab_components ).
+
+    DATA(dyn_table_descr) = cl_abap_tabledescr=>get(
+      p_line_type = dyn_struct_descr ).
+
+    CREATE DATA query_result TYPE HANDLE dyn_table_descr.
 
   ENDMETHOD.
+
 
 ENDCLASS.

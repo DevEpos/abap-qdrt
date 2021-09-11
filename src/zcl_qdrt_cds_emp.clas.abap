@@ -9,7 +9,8 @@ CLASS zcl_qdrt_cds_emp DEFINITION
     METHODS:
       zif_qdrt_entity_metadata_prov~get_field_config REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_metadata REDEFINITION,
-      zif_qdrt_entity_metadata_prov~get_field_metadata REDEFINITION.
+      zif_qdrt_entity_metadata_prov~get_field_metadata REDEFINITION,
+      zif_qdrt_entity_metadata_prov~get_fields_metadata REDEFINITION.
   PROTECTED SECTION.
     METHODS:
       read_fields_metadata REDEFINITION.
@@ -94,24 +95,29 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
         internal_error = 2
         OTHERS         = 3.
 
-    LOOP AT fields ASSIGNING FIELD-SYMBOL(<field>).
+    LOOP AT fields_cds ASSIGNING FIELD-SYMBOL(<field_cds>).
+      ASSIGN fields[ fieldname = <field_cds>-fieldname ] TO FIELD-SYMBOL(<field_dd>).
       metadata-fields = VALUE #( BASE metadata-fields
         ( to_field_metadata( field_info = CORRESPONDING zif_qdrt_ty_global=>ty_field_info(
-            <field> MAPPING name               = fieldname
-                            is_key             = keyflag
-                            length             = leng
-                            has_fix_values     = valexi
-                            short_description  = scrtext_s
-                            medium_description = scrtext_m
-                            long_description   = scrtext_l
-                            field_text         = fieldtext
-                            has_value_help     = f4availabl
-                            ref_field          = reffield
-                            ref_table          = reftable
-                            is_lowercase       = lowercase ) ) ) ).
+            <field_dd> MAPPING name               = fieldname
+                               is_key             = keyflag
+                               length             = leng
+                               has_fix_values     = valexi
+                               short_description  = scrtext_s
+                               medium_description = scrtext_m
+                               long_description   = scrtext_l
+                               field_text         = fieldtext
+                               has_value_help     = f4availabl
+                               ref_field          = reffield
+                               ref_table          = reftable
+                               is_lowercase       = lowercase ) ) ) ).
     ENDLOOP.
 
   ENDMETHOD.
 
+
+  METHOD zif_qdrt_entity_metadata_prov~get_fields_metadata.
+    result = metadata-fields.
+  ENDMETHOD.
 
 ENDCLASS.

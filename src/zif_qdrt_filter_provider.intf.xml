@@ -17,6 +17,12 @@
      <LANGU>E</LANGU>
      <DESCRIPT>Converts all filters to a where condition</DESCRIPT>
     </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_FILTER_PROVIDER</CLSNAME>
+     <CMPNAME>IS_EMPTY</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Returns &apos;X&apos; if no filters exist</DESCRIPT>
+    </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
  </asx:abap>

@@ -14,7 +14,17 @@ CLASS zcl_qdrt_default_fc DEFINITION
     METHODS:
       convert_date_filter
         CHANGING
-          filter TYPE zif_qdrt_filter_provider=>ty_filter.
+          filter TYPE zif_qdrt_filter_provider=>ty_filter,
+      conv_filter_ranges_to_int
+        IMPORTING
+          field_metadata TYPE zif_qdrt_ty_global=>ty_field_metadata
+        CHANGING
+          filter_ranges  TYPE zif_qdrt_filter_provider=>ty_filter_ranges,
+      conv_filter_range_to_int
+        IMPORTING
+          field_metadata TYPE zif_qdrt_ty_global=>ty_field_metadata
+        CHANGING
+          filter_range   TYPE zif_qdrt_filter_provider=>ty_filter_range.
 ENDCLASS.
 
 
@@ -28,6 +38,12 @@ CLASS zcl_qdrt_default_fc IMPLEMENTATION.
 
       DATA(field_metadata) = metadata_provider->get_field_metadata( fieldname = CONV #( <filter>-field_name ) ).
       CHECK field_metadata IS NOT INITIAL.
+
+      conv_filter_ranges_to_int(
+        EXPORTING
+          field_metadata = field_metadata
+        CHANGING
+          filter_ranges  = <filter>-ranges ).
 
       " check if conversion to some internal representation is needed
       CASE field_metadata-type.
@@ -59,6 +75,66 @@ CLASS zcl_qdrt_default_fc IMPLEMENTATION.
         <filter_range>-value2 = replace( val = <filter_range>-value1 sub = '-' with = space occ = 0 ).
       ENDIF.
     ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD conv_filter_ranges_to_int.
+
+    LOOP AT filter_ranges ASSIGNING FIELD-SYMBOL(<filter_range>).
+      conv_filter_range_to_int(
+        EXPORTING
+          field_metadata = field_metadata
+        CHANGING
+          filter_range   = <filter_range> ).
+
+      IF <filter_range>-operation IS INITIAL.
+        DELETE filter_ranges.
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+
+  METHOD conv_filter_range_to_int.
+    DATA:
+      contains_regex_pattern TYPE string.
+
+    CASE filter_range-operation.
+
+      WHEN zif_qdrt_c_ext_filter_ops=>contains OR
+           zif_qdrt_c_ext_filter_ops=>starts_with OR
+           zif_qdrt_c_ext_filter_ops=>ends_with.
+
+        CASE filter_range-operation.
+          WHEN zif_qdrt_c_ext_filter_ops=>contains.
+            contains_regex_pattern = `*&1*`.
+
+          WHEN zif_qdrt_c_ext_filter_ops=>starts_with.
+            contains_regex_pattern = `&1*`.
+
+          WHEN zif_qdrt_c_ext_filter_ops=>ends_with.
+            contains_regex_pattern = `*&1`.
+        ENDCASE.
+
+        filter_range-operation = zif_qdrt_c_filter_ops=>contains_pattern.
+        filter_range-value1 = replace( val = contains_regex_pattern sub = '&1' with = filter_range-value1 ).
+
+      WHEN zif_qdrt_c_ext_filter_ops=>empty.
+        filter_range-operation = zif_qdrt_c_filter_ops=>equals.
+        CLEAR: filter_range-value1,
+               filter_range-value2.
+        " TODO: Some data types like RAW need another default value than ''
+
+      WHEN zif_qdrt_c_ext_filter_ops=>between OR
+           zif_qdrt_c_ext_filter_ops=>equals OR
+           zif_qdrt_c_ext_filter_ops=>greater_equals OR
+           zif_qdrt_c_ext_filter_ops=>greater_than OR
+           zif_qdrt_c_ext_filter_ops=>lesser_equal OR
+           zif_qdrt_c_ext_filter_ops=>lesser_than.
+      WHEN OTHERS.
+        CLEAR filter_range-operation.
+    ENDCASE.
 
   ENDMETHOD.
 

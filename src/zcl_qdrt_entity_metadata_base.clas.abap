@@ -5,8 +5,12 @@ CLASS zcl_qdrt_entity_metadata_base DEFINITION
   CREATE PROTECTED.
 
   PUBLIC SECTION.
-    INTERFACES:
-      zif_qdrt_entity_metadata_prov ABSTRACT METHODS get_field_config get_metadata get_field_metadata.
+    INTERFACES zif_qdrt_entity_metadata_prov
+      ABSTRACT METHODS
+      get_field_config
+      get_metadata
+      get_field_metadata
+      get_fields_metadata.
 
     METHODS:
       init.
@@ -56,7 +60,7 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_qdrt_entity_metadata_prov~exists.
+  METHOD zif_qdrt_entity_metadata_prov~entity_exists.
     IF exists = abap_undefined.
       SELECT SINGLE @abap_true
         FROM zqdrt_i_dbentity

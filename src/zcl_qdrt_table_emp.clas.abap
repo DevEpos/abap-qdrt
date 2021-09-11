@@ -9,7 +9,8 @@ CLASS zcl_qdrt_table_emp DEFINITION
     METHODS:
       zif_qdrt_entity_metadata_prov~get_field_config REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_metadata REDEFINITION,
-      zif_qdrt_entity_metadata_prov~get_field_metadata REDEFINITION.
+      zif_qdrt_entity_metadata_prov~get_field_metadata REDEFINITION,
+      zif_qdrt_entity_metadata_prov~get_fields_metadata REDEFINITION.
   PROTECTED SECTION.
     METHODS:
       read_fields_metadata REDEFINITION.
@@ -75,5 +76,9 @@ CLASS zcl_qdrt_table_emp IMPLEMENTATION.
 
   ENDMETHOD.
 
+
+  METHOD zif_qdrt_entity_metadata_prov~get_fields_metadata.
+    result = metadata-fields.
+  ENDMETHOD.
 
 ENDCLASS.

@@ -24,6 +24,12 @@
      <LANGU>E</LANGU>
      <DESCRIPT>Retrieves data</DESCRIPT>
     </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_ENTITY_DATA_PROVIDER</CLSNAME>
+     <CMPNAME>GET_MAX_ROWS</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Retrieves maximum row count</DESCRIPT>
+    </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
  </asx:abap>

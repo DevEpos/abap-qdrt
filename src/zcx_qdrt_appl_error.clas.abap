@@ -10,6 +10,9 @@ CLASS zcx_qdrt_appl_error DEFINITION
       if_t100_message,
       zif_qdrt_exception_message.
 
+    ALIASES:
+      get_message FOR zif_qdrt_exception_message~get_message.
+
     CONSTANTS:
       BEGIN OF general_error,
         msgid TYPE symsgid VALUE 'ZQDRT_ERROR',

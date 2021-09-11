@@ -4,7 +4,7 @@ INTERFACE zif_qdrt_sort_config
 
   TYPES:
     BEGIN OF ty_sort_field,
-      column_key     TYPE fieldname,
+      field_name     TYPE fieldname,
       sort_direction TYPE string,
     END OF ty_sort_field,
 

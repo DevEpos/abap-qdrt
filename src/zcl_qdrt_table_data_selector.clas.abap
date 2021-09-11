@@ -14,5 +14,4 @@ ENDCLASS.
 
 CLASS zcl_qdrt_table_data_selector IMPLEMENTATION.
 
-
 ENDCLASS.

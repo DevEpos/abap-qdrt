@@ -24,7 +24,7 @@ CLASS zcl_qdrt_message_helper DEFINITION
           msgv3           TYPE sy-msgv3 OPTIONAL
           msgv4           TYPE sy-msgv4 OPTIONAL
         RETURNING
-          VALUE(message)   TYPE string.
+          VALUE(message)  TYPE string.
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES:
@@ -53,58 +53,16 @@ CLASS zcl_qdrt_message_helper IMPLEMENTATION.
   METHOD set_msg_vars_from_text.
 
     split_text(
-      EXPORTING text  = text
-      IMPORTING msgv1 = DATA(msgv1)
-                msgv2 = DATA(msgv2)
-                msgv3 = DATA(msgv3)
-                msgv4 = DATA(msgv4) ).
+      EXPORTING
+        text  = text
+      IMPORTING
+        msgv1 = DATA(msgv1)
+        msgv2 = DATA(msgv2)
+        msgv3 = DATA(msgv3)
+        msgv4 = DATA(msgv4) ).
 
     MESSAGE e000(zqdrt_error) WITH msgv1 msgv2 msgv3 msgv4
       INTO DATA(dummy) ##needed.
-  ENDMETHOD.
-
-
-  METHOD split_text.
-    DATA: tmp_text TYPE ty_message,
-          msg_var  TYPE c LENGTH c_length_of_msgv,
-          rest     TYPE ty_message,
-          index    TYPE syst-index.
-
-    tmp_text = text.
-
-    DO 4 TIMES.
-
-      index = sy-index.
-
-      CALL FUNCTION 'TEXT_SPLIT'
-        EXPORTING
-          length = c_length_of_msgv
-          text   = tmp_text
-        IMPORTING
-          line   = msg_var
-          rest   = rest.
-
-      IF msg_var+c_offset_of_last_character = space.
-        " keep the space at the beginning of the rest
-        " because otherwise it's lost
-        rest = | { rest }|.
-      ENDIF.
-
-      tmp_text = rest.
-
-      CASE index.
-        WHEN 1.
-          msgv1 = msg_var.
-        WHEN 2.
-          msgv2 = msg_var.
-        WHEN 3.
-          msgv3 = msg_var.
-        WHEN 4.
-          msgv4 = msg_var.
-      ENDCASE.
-
-    ENDDO.
-
   ENDMETHOD.
 
 
@@ -154,6 +112,50 @@ CLASS zcl_qdrt_message_helper IMPLEMENTATION.
                 INTO message.
       ENDIF.
     ENDIF.
+  ENDMETHOD.
+
+
+  METHOD split_text.
+    DATA: tmp_text TYPE ty_message,
+          msg_var  TYPE c LENGTH c_length_of_msgv,
+          rest     TYPE ty_message,
+          index    TYPE syst-index.
+
+    tmp_text = text.
+
+    DO 4 TIMES.
+
+      index = sy-index.
+
+      CALL FUNCTION 'TEXT_SPLIT'
+        EXPORTING
+          length = c_length_of_msgv
+          text   = tmp_text
+        IMPORTING
+          line   = msg_var
+          rest   = rest.
+
+      IF msg_var+c_offset_of_last_character = space.
+        " keep the space at the beginning of the rest
+        " because otherwise it's lost
+        rest = | { rest }|.
+      ENDIF.
+
+      tmp_text = rest.
+
+      CASE index.
+        WHEN 1.
+          msgv1 = msg_var.
+        WHEN 2.
+          msgv2 = msg_var.
+        WHEN 3.
+          msgv3 = msg_var.
+        WHEN 4.
+          msgv4 = msg_var.
+      ENDCASE.
+
+    ENDDO.
+
   ENDMETHOD.
 
 

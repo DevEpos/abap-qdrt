@@ -17,6 +17,30 @@
      <LANGU>E</LANGU>
      <DESCRIPT>Returns the select clause</DESCRIPT>
     </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_OUTPUT_FIELD_CONFIG</CLSNAME>
+     <CMPNAME>HAS_AGGR_FIELDS</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Returns &apos;X&apos; if aggregation function are used</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_OUTPUT_FIELD_CONFIG</CLSNAME>
+     <CMPNAME>IS_OUTPUT_FIELD</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Returns &apos;X&apos; if field is an output field</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_OUTPUT_FIELD_CONFIG</CLSNAME>
+     <CMPNAME>SET_SELECT_ONLY_SPECIFIED</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Sets value for &apos;Select only specified&apos;</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_OUTPUT_FIELD_CONFIG</CLSNAME>
+     <CMPNAME>SET_USE_COUNT_FIELD</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Sets value for &apos;Use count field&apos;</DESCRIPT>
+    </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
  </asx:abap>
