@@ -1,5 +1,5 @@
 ![](https://img.shields.io/badge/version-WIP-red)
-![](https://img.shields.io/badge/ABAP-v7.5ß+-orange)
+![](https://img.shields.io/badge/ABAP-v7.50+-orange)
 # abap-qdrt
 ABAP Backend for [UI5 Quick Data Reporter](https://github.com/stockbal/quick-data-reporter)
 
