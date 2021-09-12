@@ -7,6 +7,7 @@ CLASS zcl_qdrt_table_emp DEFINITION
 
   PUBLIC SECTION.
     METHODS:
+      zif_qdrt_entity_metadata_prov~entity_exists REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_field_config REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_metadata REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_field_metadata REDEFINITION,
@@ -25,6 +26,27 @@ ENDCLASS.
 
 
 CLASS zcl_qdrt_table_emp IMPLEMENTATION.
+
+
+  METHOD zif_qdrt_entity_metadata_prov~entity_exists.
+    IF exists = abap_undefined.
+      IF entity_type = zif_qdrt_c_entity_types=>database_table.
+        SELECT SINGLE @abap_true
+          FROM zqdrt_i_dbtable
+          WHERE tablename = @entity_name
+          INTO @exists.
+      ELSEIF entity_type = zif_qdrt_c_entity_types=>view.
+        SELECT SINGLE @abap_true
+          FROM zqdrt_i_dbview
+          WHERE viewname = @entity_name
+          INTO @exists.
+      ENDIF.
+      IF sy-subrc <> 0.
+        exists = abap_false.
+      ENDIF.
+    ENDIF.
+    result = exists.
+  ENDMETHOD.
 
 
   METHOD zif_qdrt_entity_metadata_prov~get_metadata.

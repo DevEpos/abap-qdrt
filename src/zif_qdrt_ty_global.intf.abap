@@ -25,6 +25,16 @@ INTERFACE zif_qdrt_ty_global
     "! <p class="shorttext synchronized" lang="en">Type of field</p>
     ty_field_type           TYPE c LENGTH 1,
 
+    "! <p class="shorttext synchronized" lang="en">Source type of DDL source</p>
+    ty_ddl_source_type      TYPE c LENGTH 1,
+
+    BEGIN OF ty_ddl_source,
+      ddlname     TYPE ddlname,
+      source_type TYPE ty_ddl_source_type,
+    END OF ty_ddl_source,
+
+    ty_ddl_source_type_range TYPE RANGE OF ty_ddl_source_type,
+
     "! <p class="shorttext synchronized" lang="en">Settings for query execution</p>
     BEGIN OF ty_query_exec_settings,
       max_rows           TYPE i,

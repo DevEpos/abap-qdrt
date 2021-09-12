@@ -7,6 +7,7 @@ CLASS zcl_qdrt_entity_metadata_base DEFINITION
   PUBLIC SECTION.
     INTERFACES zif_qdrt_entity_metadata_prov
       ABSTRACT METHODS
+      entity_exists
       get_field_config
       get_metadata
       get_field_metadata
@@ -57,21 +58,6 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
 
   METHOD init.
     read_metadata( ).
-  ENDMETHOD.
-
-
-  METHOD zif_qdrt_entity_metadata_prov~entity_exists.
-    IF exists = abap_undefined.
-      SELECT SINGLE @abap_true
-        FROM zqdrt_i_dbentity
-        WHERE EntityId = @entity_name
-          AND Type = @entity_type
-        INTO @exists.
-      IF sy-subrc <> 0.
-        exists = abap_false.
-      ENDIF.
-    ENDIF.
-    result = exists.
   ENDMETHOD.
 
 

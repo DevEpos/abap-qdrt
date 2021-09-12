@@ -7,6 +7,7 @@ CLASS zcl_qdrt_cds_emp DEFINITION
 
   PUBLIC SECTION.
     METHODS:
+      zif_qdrt_entity_metadata_prov~entity_exists REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_field_config REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_metadata REDEFINITION,
       zif_qdrt_entity_metadata_prov~get_field_metadata REDEFINITION,
@@ -41,6 +42,34 @@ ENDCLASS.
 
 
 CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
+
+
+  METHOD zif_qdrt_entity_metadata_prov~entity_exists.
+
+    IF exists = abap_undefined.
+      IF sy-saprl >= 751.
+        DATA(source_type_where_cond) = `source_type IN @<valid_source_types>`.
+        ASSIGN zcl_qdrt_cds_util=>valid_ddl_source_types TO FIELD-SYMBOL(<valid_source_types>).
+
+        SELECT SINGLE @abap_true
+          FROM ddddlsrc AS ddl
+            INNER JOIN zqdrt_i_cdsview AS cds
+              ON ddl~ddlname = cds~AltEntityId
+          WHERE entityid = @entity_name
+            AND (source_type_where_cond)
+          INTO @exists.
+      ELSE.
+        SELECT SINGLE @abap_true
+          FROM zqdrt_i_cdsview
+          WHERE entityid = @entity_name
+          INTO @exists.
+      ENDIF.
+      IF sy-subrc <> 0.
+        exists = abap_false.
+      ENDIF.
+    ENDIF.
+    result = exists.
+  ENDMETHOD.
 
 
   METHOD zif_qdrt_entity_metadata_prov~get_metadata.

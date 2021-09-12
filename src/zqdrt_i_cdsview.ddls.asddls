@@ -20,14 +20,14 @@ define view ZQDRT_I_CdsView
 {
   key StructuredObject.strucobjn     as EntityId,
       StructuredObject.strucobjn_raw as RawEntityId,
+      DDLSource.ddlname              as AltEntityId,
       Text.ddtext                    as Description,
       Repo.devclass                  as DevelopmentPackage,
       Repo.author                    as CreatedBy,
       Repo.created_on                as CreatedDate,
       DDLSource.as4user              as ChangedBy,
       DDLSource.as4date              as ChangedDate,
-      DDLSource.source_type          as SourceType,
       'C'                            as Type
 }
 where
-  DDLSource.source_type = 'V'
+  DDLSource.as4local = 'A'
