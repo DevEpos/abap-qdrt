@@ -137,11 +137,13 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
 
   METHOD set_response.
     DATA(json) = /ui2/cl_json=>serialize(
-      data          = query_result
-      compress      = abap_true
-      pretty_name   = /ui2/cl_json=>pretty_mode-low_case
-      name_mappings = VALUE #(
-        ( abap = 'max_rows' json = 'maxRows' ) ) ).
+      data             = query_result
+      compress         = abap_true
+      pretty_name      = /ui2/cl_json=>pretty_mode-low_case
+      " TODO: make setting available
+*      conversion_exits = abap_true
+      name_mappings    = VALUE #(
+           ( abap = 'max_rows' json = 'maxRows' ) ) ).
 
     mo_response->create_entity( )->set_string_data( json ).
     mo_response->set_status( cl_rest_status_code=>gc_success_ok ).
