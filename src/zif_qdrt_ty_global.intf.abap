@@ -79,7 +79,7 @@ INTERFACE zif_qdrt_ty_global
       short_description  TYPE string,
       medium_description TYPE string,
       long_description   TYPE string,
-      fieldtext          TYPE string,
+      field_text         TYPE string,
       semantics          TYPE string,
       unit_field         TYPE string,
       has_value_help     TYPE abap_bool,
