@@ -28,7 +28,7 @@ CLASS zcl_qdrt_entity_metadata_base DEFINITION
         IMPORTING
           entity_name TYPE zif_qdrt_ty_global=>ty_entity_name
           entity_type TYPE zif_qdrt_ty_global=>ty_entity_type,
-      read_fields_metadata ABSTRACT,
+      read_metadata ABSTRACT,
 
       to_field_metadata
         IMPORTING
@@ -56,7 +56,7 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
 
 
   METHOD init.
-    read_fields_metadata( ).
+    read_metadata( ).
   ENDMETHOD.
 
 
@@ -94,7 +94,7 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
            'GGM1' OR " Geo Data, take as string type for now
            'CUKY' OR
            'NUMC' OR " Normally NUMC is not to be considered as Number
-           'UNIT' THEN 'String'
+           'UNIT' THEN zif_qdrt_c_edm_types=>string
       " Float types
       WHEN 'D16D' OR
            'D16N' OR
@@ -103,57 +103,57 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
            'D34D' OR
            'D34N' OR
            'D34R' OR
-           'D34S' THEN 'Float'
+           'D34S' THEN zif_qdrt_c_edm_types=>Float
       " Date Types
       WHEN 'DATN' OR
            'ACCP' OR " Posting Period YYYYMM
-           'DATS' THEN 'Date'
+           'DATS' THEN zif_qdrt_c_edm_types=>Date
       " Decimal types
       WHEN 'DEC' OR
            'CURR' OR
-           'QUAN' THEN 'Decimal'
+           'QUAN' THEN zif_qdrt_c_edm_types=>Decimal
       " Double types
-      WHEN 'FLTP' THEN 'Double'
+      WHEN 'FLTP' THEN zif_qdrt_c_edm_types=>Double
       " Integer types
-      WHEN 'INT1' THEN 'Byte'
-      WHEN 'INT2' THEN 'Int16'
-      WHEN 'INT4' THEN 'Int32'
-      WHEN 'INT8' THEN 'Int64'
+      WHEN 'INT1' THEN zif_qdrt_c_edm_types=>Byte
+      WHEN 'INT2' THEN zif_qdrt_c_edm_types=>Int16
+      WHEN 'INT4' THEN zif_qdrt_c_edm_types=>Int32
+      WHEN 'INT8' THEN zif_qdrt_c_edm_types=>Int64
       " Binary types
       WHEN 'LRAW' OR
-           'RSTR' THEN 'Binary'
+           'RSTR' THEN zif_qdrt_c_edm_types=>Binary
       " Byte types
-      WHEN 'RAW' THEN 'Byte'
+      WHEN 'RAW' THEN zif_qdrt_c_edm_types=>Byte
       " Time
       WHEN 'TIMN' OR
-           'TIMS' THEN 'Time'
+           'TIMS' THEN zif_qdrt_c_edm_types=>Time
       " Time stamp with Data/Time
-      WHEN 'UTCL' THEN 'DateTime' ).
+      WHEN 'UTCL' THEN zif_qdrt_c_edm_types=>Date_Time ).
 
     " check if timestamp
     IF field_info-domname = 'TZNTSTMPL'.
-      result-type = 'DateTimeOffset'.
+      result-type = zif_qdrt_c_edm_types=>Date_Time_Offset.
     ENDIF.
 
     IF field_info-domname = 'TZNTSTMPS'.
-      result-type = 'DateTime'.
+      result-type = zif_qdrt_c_edm_types=>Date_Time.
     ENDIF.
 
     IF field_info-domname = 'SYSUUID'.
       " Note: /ui2/cl_json does not appear to be able to serialize guids
-      result-type = 'Guid'.
+      result-type = zif_qdrt_c_edm_types=>Guid.
     ENDIF.
 
     IF result-type CP 'Int*' OR
-        result-type = 'Byte' OR
-        result-type = 'Decimal' OR
-        result-type = 'Float'.
+        result-type = zif_qdrt_c_edm_types=>Byte OR
+        result-type = zif_qdrt_c_edm_types=>Decimal OR
+        result-type = zif_qdrt_c_edm_types=>Float.
       result-is_numeric = abap_true.
     ENDIF.
 
     IF result-type CP 'Int*' OR
-        result-type = 'Decimal' OR
-        result-type = 'Float'.
+        result-type = zif_qdrt_c_edm_types=>Decimal OR
+        result-type = zif_qdrt_c_edm_types=>Float.
       result-is_total_possible = abap_true.
     ENDIF.
 
@@ -177,16 +177,16 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
     IF field_info-domname = 'BOOLE_D' OR
         field_info-domname = 'BOOLEAN' OR
         field_info-domname = 'XFELD'.
-      result-type = 'Boolean'.
+      result-type = zif_qdrt_c_edm_types=>Boolean.
     ELSEIF field_info-datatype = 'CHAR' AND
         field_info-length = 1 AND
         field_info-domname IS NOT INITIAL.
       IF is_boolean_type( field_info-rollname ).
-        result-type = 'Boolean'.
+        result-type = zif_qdrt_c_edm_types=>Boolean.
       ENDIF.
     ENDIF.
 
-    IF result-type = 'Boolean'.
+    IF result-type = zif_qdrt_c_edm_types=>Boolean.
       CLEAR: field_info-has_fix_values,
              result-has_value_help.
     ENDIF.
@@ -205,7 +205,7 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
       result-value_help_type = 'DomainFixValues'.
       fields_with_dfvh = VALUE #( BASE fields_with_dfvh ( result-name ) ).
     ELSEIF result-has_value_help = abap_true.
-      IF result-type = 'Date'.
+      IF result-type = zif_qdrt_c_edm_types=>Date.
         result-value_help_type = 'Date'.
       ELSE.
         result-value_help_type = 'ElementaryDDICSearchHelp'.
@@ -213,7 +213,7 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
     ENDIF.
 
     " handle display format
-    IF result-type = 'String' AND field_info-is_lowercase = abap_false.
+    IF result-type = zif_qdrt_c_edm_types=>String AND field_info-is_lowercase = abap_false.
       result-display_format = 'UpperCase'.
     ENDIF.
   ENDMETHOD.
