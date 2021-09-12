@@ -26,7 +26,8 @@ CLASS zcl_qdrt_entities_res DEFINITION
     DATA:
       filter_ranges          TYPE RANGE OF tabname,
       max_rows               TYPE i,
-      extended_search_result TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY.
+      extended_search_result TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY,
+      entity_type_range      TYPE RANGE OF zif_qdrt_ty_global=>ty_entity_type.
 
     METHODS:
       read_uri_params,
@@ -60,17 +61,22 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
 
 
   METHOD read_uri_params.
-    DATA(filter) = mo_request->get_uri_query_parameter( iv_name = '$filter' iv_encoded = abap_false ).
     DATA(top_param) = mo_request->get_uri_query_parameter( iv_name = '$top' iv_encoded = abap_false ).
     max_rows = CONV i( top_param ).
     IF max_rows IS INITIAL.
       max_rows = 200.
     ENDIF.
 
+    DATA(filter) = mo_request->get_uri_query_parameter( iv_name = '$filter' iv_encoded = abap_false ).
     IF filter IS NOT INITIAL.
       filter_ranges = VALUE #( ( sign   = 'I'
                                  option = COND #( WHEN filter CA '*+' THEN 'CP' ELSE 'EQ' )
                                  low    = to_upper( filter ) ) ).
+    ENDIF.
+
+    DATA(entity_type) = to_upper( mo_request->get_uri_query_parameter( iv_name = 'entityType' ) ).
+    IF entity_type IS NOT INITIAL.
+      entity_type_range = VALUE #( ( sign = 'I' option = 'EQ' low = entity_type ) ).
     ENDIF.
   ENDMETHOD.
 
@@ -83,6 +89,7 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
            developmentpackage AS package_name
       FROM zqdrt_i_dbentity
       WHERE entityid IN @filter_ranges
+        AND type IN @entity_type_range
       ORDER BY type,
                entityid
       INTO CORRESPONDING FIELDS OF TABLE @extended_search_result
