@@ -13,7 +13,7 @@ CLASS zcl_qdrt_table_emp DEFINITION
       zif_qdrt_entity_metadata_prov~get_fields_metadata REDEFINITION.
   PROTECTED SECTION.
     METHODS:
-      read_fields_metadata REDEFINITION.
+      read_metadata REDEFINITION.
   PRIVATE SECTION.
     DATA:
       fields TYPE STANDARD TABLE OF dfies WITH EMPTY KEY,
@@ -46,7 +46,7 @@ CLASS zcl_qdrt_table_emp IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD read_fields_metadata.
+  METHOD read_metadata.
     CALL FUNCTION 'DDIF_FIELDINFO_GET'
       EXPORTING
         tabname        = entity_name

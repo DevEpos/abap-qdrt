@@ -13,7 +13,7 @@ CLASS zcl_qdrt_cds_emp DEFINITION
       zif_qdrt_entity_metadata_prov~get_fields_metadata REDEFINITION.
   PROTECTED SECTION.
     METHODS:
-      read_fields_metadata REDEFINITION.
+      read_metadata REDEFINITION.
   PRIVATE SECTION.
     DATA:
       header_info        TYPE dd02bv,
@@ -29,6 +29,13 @@ CLASS zcl_qdrt_cds_emp DEFINITION
         parameters TYPE zif_qdrt_ty_global=>ty_fields_metadata,
       END OF metadata.
 
+    METHODS:
+      fill_fields_metadata
+        IMPORTING
+          fields_cds TYPE dd03ndvtab,
+      fill_param_metadata
+        IMPORTING
+          params TYPE dd10bvtab.
 ENDCLASS.
 
 
@@ -57,7 +64,7 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD read_fields_metadata.
+  METHOD read_metadata.
     DATA(dd_sobject) = cl_dd_sobject_factory=>create( ).
 
     TRY.
@@ -84,6 +91,18 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
 
     header_info = headers[ 1 ].
     ddl_view_name = nodes[ 1 ]-dbtabname.
+
+    fill_fields_metadata( fields_cds ).
+    fill_param_metadata( parameters ).
+  ENDMETHOD.
+
+
+  METHOD zif_qdrt_entity_metadata_prov~get_fields_metadata.
+    result = metadata-fields.
+  ENDMETHOD.
+
+
+  METHOD fill_fields_metadata.
 
     CALL FUNCTION 'DDIF_FIELDINFO_GET'
       EXPORTING
@@ -116,8 +135,48 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_qdrt_entity_metadata_prov~get_fields_metadata.
-    result = metadata-fields.
+  METHOD fill_param_metadata.
+    DATA:
+      type_info TYPE dfies.
+
+    CHECK params IS NOT INITIAL.
+
+    LOOP AT params ASSIGNING FIELD-SYMBOL(<param>).
+      CLEAR type_info.
+      DATA(param_info) = VALUE zif_qdrt_ty_global=>ty_field_info(
+        name               = <param>-parametername
+        datatype           = <param>-datatype
+        decimals           = <param>-decimals
+        length             = <param>-leng
+        rollname           = <param>-rollname
+        field_text         = <param>-ddtext ).
+      IF <param>-rollname IS NOT INITIAL.
+        CALL FUNCTION 'DDIF_FIELDINFO_GET'
+          EXPORTING
+            tabname        = entity_name
+          IMPORTING
+            dfies_wa       = type_info
+          EXCEPTIONS
+            not_found      = 1
+            internal_error = 2
+            OTHERS         = 3.
+
+        param_info-domname            = type_info-domname.
+        param_info-has_fix_values     = type_info-valexi.
+        param_info-short_description  = type_info-scrtext_s.
+        param_info-medium_description = type_info-scrtext_m.
+        param_info-long_description   = type_info-scrtext_l.
+        param_info-has_value_help     = type_info-f4availabl.
+        param_info-ref_field          = type_info-reffield.
+        param_info-ref_table          = type_info-reftable.
+        param_info-checktable         = type_info-checktable.
+        param_info-is_lowercase       = type_info-lowercase.
+
+      ENDIF.
+
+      metadata-parameters = VALUE #( BASE metadata-parameters ( to_field_metadata( param_info ) ) ).
+    ENDLOOP.
+
   ENDMETHOD.
 
 ENDCLASS.
