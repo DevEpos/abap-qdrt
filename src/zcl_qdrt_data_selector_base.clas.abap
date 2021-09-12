@@ -121,7 +121,9 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
 
       tab_components = VALUE #( BASE tab_components
         ( name = to_upper( <field_metadata>-name )
-          type = CAST #( cl_abap_typedescr=>describe_by_name( |{ entity_name }-{ <field_metadata>-name }| ) ) ) ).
+          type = CAST #( cl_abap_typedescr=>describe_by_name(
+            COND #( WHEN <field_metadata>-rollname IS NOT INITIAL THEN <field_metadata>-rollname
+                    ELSE |{ entity_name }-{ <field_metadata>-name }| ) ) ) ) ).
     ENDLOOP.
 
     IF aggregation_config->is_empty( ) = abap_false.

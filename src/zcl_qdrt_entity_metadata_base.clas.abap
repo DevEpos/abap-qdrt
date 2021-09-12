@@ -169,6 +169,8 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
         field_info-domname IS NOT INITIAL.
       IF is_boolean_type( field_info-rollname ).
         result-type = zif_qdrt_c_edm_types=>Boolean.
+        " Set rollname explicitly to XFELD so JSON serializer detect's it as boolean type
+        result-rollname = 'XFELD'.
       ENDIF.
     ENDIF.
 
