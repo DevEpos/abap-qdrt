@@ -150,7 +150,7 @@ CLASS zcl_qdrt_sql_query_executor IMPLEMENTATION.
     IF  max_row_count IS SUPPLIED AND
         max_row_count > 0 AND
         query->query_data-is_single_result_query = abap_false AND
-        query->query_data-main_select_stmnt_type <> zcl_dbbr_sql_query_parser=>c_keywords-union.
+        query->query_data-main_select_stmnt_type <> zcl_qdrt_sql_query_parser=>c_keywords-union.
       <last_query_line> = |{ <last_query_line> } UP TO { max_row_count } ROWS.|.
     ELSE.
       <last_query_line> = |{ <last_query_line> }.|.
