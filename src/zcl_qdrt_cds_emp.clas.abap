@@ -20,7 +20,6 @@ CLASS zcl_qdrt_cds_emp DEFINITION
       header_info        TYPE dd02bv,
       ddl_view_name      TYPE viewname,
       fields_cds         TYPE dd03ndvtab,
-      fields             TYPE STANDARD TABLE OF dfies WITH EMPTY KEY,
       association_header TYPE dd08bvtab,
       association_fields TYPE dd05bvtab,
       parameters         TYPE dd10bvtab,
@@ -54,7 +53,7 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
         SELECT SINGLE @abap_true
           FROM ddddlsrc AS ddl
             INNER JOIN zqdrt_i_cdsview AS cds
-              ON ddl~ddlname = cds~AltEntityId
+              ON ddl~ddlname = cds~altentityid
           WHERE entityid = @entity_name
             AND (source_type_where_cond)
           INTO @exists.
@@ -133,32 +132,26 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
 
   METHOD fill_fields_metadata.
 
-    CALL FUNCTION 'DDIF_FIELDINFO_GET'
-      EXPORTING
-        tabname        = entity_name
-      TABLES
-        dfies_tab      = fields
-      EXCEPTIONS
-        not_found      = 1
-        internal_error = 2
-        OTHERS         = 3.
-
     LOOP AT fields_cds ASSIGNING FIELD-SYMBOL(<field_cds>).
-      ASSIGN fields[ fieldname = <field_cds>-fieldname ] TO FIELD-SYMBOL(<field_dd>).
-      metadata-fields = VALUE #( BASE metadata-fields
-        ( to_field_metadata( field_info = CORRESPONDING zif_qdrt_ty_global=>ty_field_info(
-            <field_dd> MAPPING name               = fieldname
-                               is_key             = keyflag
-                               length             = leng
-                               has_fix_values     = valexi
-                               short_description  = scrtext_s
-                               medium_description = scrtext_m
-                               long_description   = scrtext_l
-                               field_text         = fieldtext
-                               has_value_help     = f4availabl
-                               ref_field          = reffield
-                               ref_table          = reftable
-                               is_lowercase       = lowercase ) ) ) ).
+      data(dtel_info) = get_dtel_info( <field_cds>-rollname ).
+      DATA(field_info) = CORRESPONDING zif_qdrt_ty_global=>ty_field_info(
+        dtel_info MAPPING has_fix_values     = valexi
+                          short_description  = scrtext_s
+                          medium_description = scrtext_m
+                          long_description   = scrtext_l
+                          field_text         = fieldtext
+                          has_value_help     = f4availabl
+                          is_lowercase       = lowercase ).
+      IF dtel_info IS INITIAL.
+        field_info-field_text = <field_cds>-quickinfo.
+      ENDIF.
+
+      field_info-name = <field_cds>-fieldname.
+      field_info-datatype = <field_cds>-datatype.
+      field_info-is_key = <field_cds>-keyflag.
+      field_info-decimals = <field_cds>-decimals.
+      field_info-length = <field_cds>-leng.
+      metadata-fields = VALUE #( BASE metadata-fields ( to_field_metadata( field_info ) ) ).
     ENDLOOP.
 
   ENDMETHOD.

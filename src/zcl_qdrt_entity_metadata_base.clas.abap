@@ -14,6 +14,7 @@ CLASS zcl_qdrt_entity_metadata_base DEFINITION
       get_fields_metadata.
 
     METHODS:
+      "! <p class="shorttext synchronized" lang="en">Initializes the metadata</p>
       init.
   PROTECTED SECTION.
     CONSTANTS:
@@ -41,7 +42,14 @@ CLASS zcl_qdrt_entity_metadata_base DEFINITION
         IMPORTING
           rollname      TYPE rollname
         RETURNING
-          VALUE(result) TYPE abap_bool.
+          VALUE(result) TYPE abap_bool,
+
+      "! <p class="shorttext synchronized" lang="en">Retrieves DFIES info of data element</p>
+      get_dtel_info
+        IMPORTING
+          rollname      TYPE rollname
+        RETURNING
+          VALUE(result) TYPE dfies.
   PRIVATE SECTION.
 ENDCLASS.
 
@@ -89,57 +97,57 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
            'D34D' OR
            'D34N' OR
            'D34R' OR
-           'D34S' THEN zif_qdrt_c_edm_types=>Float
+           'D34S' THEN zif_qdrt_c_edm_types=>float
       " Date Types
       WHEN 'DATN' OR
            'ACCP' OR " Posting Period YYYYMM
-           'DATS' THEN zif_qdrt_c_edm_types=>Date
+           'DATS' THEN zif_qdrt_c_edm_types=>date
       " Decimal types
       WHEN 'DEC' OR
            'CURR' OR
-           'QUAN' THEN zif_qdrt_c_edm_types=>Decimal
+           'QUAN' THEN zif_qdrt_c_edm_types=>decimal
       " Double types
-      WHEN 'FLTP' THEN zif_qdrt_c_edm_types=>Double
+      WHEN 'FLTP' THEN zif_qdrt_c_edm_types=>double
       " Integer types
-      WHEN 'INT1' THEN zif_qdrt_c_edm_types=>Byte
-      WHEN 'INT2' THEN zif_qdrt_c_edm_types=>Int16
-      WHEN 'INT4' THEN zif_qdrt_c_edm_types=>Int32
-      WHEN 'INT8' THEN zif_qdrt_c_edm_types=>Int64
+      WHEN 'INT1' THEN zif_qdrt_c_edm_types=>byte
+      WHEN 'INT2' THEN zif_qdrt_c_edm_types=>int16
+      WHEN 'INT4' THEN zif_qdrt_c_edm_types=>int32
+      WHEN 'INT8' THEN zif_qdrt_c_edm_types=>int64
       " Binary types
       WHEN 'LRAW' OR
-           'RSTR' THEN zif_qdrt_c_edm_types=>Binary
+           'RSTR' THEN zif_qdrt_c_edm_types=>binary
       " Byte types
-      WHEN 'RAW' THEN zif_qdrt_c_edm_types=>Byte
+      WHEN 'RAW' THEN zif_qdrt_c_edm_types=>byte
       " Time
       WHEN 'TIMN' OR
-           'TIMS' THEN zif_qdrt_c_edm_types=>Time
+           'TIMS' THEN zif_qdrt_c_edm_types=>time
       " Time stamp with Data/Time
-      WHEN 'UTCL' THEN zif_qdrt_c_edm_types=>Date_Time ).
+      WHEN 'UTCL' THEN zif_qdrt_c_edm_types=>date_time ).
 
     " check if timestamp
     IF field_info-domname = 'TZNTSTMPL'.
-      result-type = zif_qdrt_c_edm_types=>Date_Time_Offset.
+      result-type = zif_qdrt_c_edm_types=>date_time_offset.
     ENDIF.
 
     IF field_info-domname = 'TZNTSTMPS'.
-      result-type = zif_qdrt_c_edm_types=>Date_Time.
+      result-type = zif_qdrt_c_edm_types=>date_time.
     ENDIF.
 
     IF field_info-domname = 'SYSUUID'.
       " Note: /ui2/cl_json does not appear to be able to serialize guids
-      result-type = zif_qdrt_c_edm_types=>Guid.
+      result-type = zif_qdrt_c_edm_types=>guid.
     ENDIF.
 
     IF result-type CP 'Int*' OR
-        result-type = zif_qdrt_c_edm_types=>Byte OR
-        result-type = zif_qdrt_c_edm_types=>Decimal OR
-        result-type = zif_qdrt_c_edm_types=>Float.
+        result-type = zif_qdrt_c_edm_types=>byte OR
+        result-type = zif_qdrt_c_edm_types=>decimal OR
+        result-type = zif_qdrt_c_edm_types=>float.
       result-is_numeric = abap_true.
     ENDIF.
 
     IF result-type CP 'Int*' OR
-        result-type = zif_qdrt_c_edm_types=>Decimal OR
-        result-type = zif_qdrt_c_edm_types=>Float.
+        result-type = zif_qdrt_c_edm_types=>decimal OR
+        result-type = zif_qdrt_c_edm_types=>float.
       result-is_total_possible = abap_true.
     ENDIF.
 
@@ -163,18 +171,18 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
     IF field_info-domname = 'BOOLE_D' OR
         field_info-domname = 'BOOLEAN' OR
         field_info-domname = 'XFELD'.
-      result-type = zif_qdrt_c_edm_types=>Boolean.
+      result-type = zif_qdrt_c_edm_types=>boolean.
     ELSEIF field_info-datatype = 'CHAR' AND
         field_info-length = 1 AND
         field_info-domname IS NOT INITIAL.
       IF is_boolean_type( field_info-rollname ).
-        result-type = zif_qdrt_c_edm_types=>Boolean.
+        result-type = zif_qdrt_c_edm_types=>boolean.
         " Set rollname explicitly to XFELD so JSON serializer detect's it as boolean type
         result-rollname = 'XFELD'.
       ENDIF.
     ENDIF.
 
-    IF result-type = zif_qdrt_c_edm_types=>Boolean.
+    IF result-type = zif_qdrt_c_edm_types=>boolean.
       CLEAR: field_info-has_fix_values,
              result-has_value_help.
     ENDIF.
@@ -188,20 +196,20 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
 
     " handle value help type
     IF field_info-checktable IS NOT INITIAL.
-      result-value_help_type = 'CheckTable'.
+      result-value_help_type = zif_qdrt_c_value_help_type=>check_table.
     ELSEIF field_info-has_fix_values = abap_true.
-      result-value_help_type = 'DomainFixValues'.
+      result-value_help_type = zif_qdrt_c_value_help_type=>fix_values.
       fields_with_dfvh = VALUE #( BASE fields_with_dfvh ( result-name ) ).
     ELSEIF result-has_value_help = abap_true.
-      IF result-type = zif_qdrt_c_edm_types=>Date.
-        result-value_help_type = 'Date'.
+      IF result-type = zif_qdrt_c_edm_types=>date.
+        result-value_help_type = zif_qdrt_c_value_help_type=>date.
       ELSE.
-        result-value_help_type = 'ElementaryDDICSearchHelp'.
+        result-value_help_type = zif_qdrt_c_value_help_type=>elementary_ddic_sh.
       ENDIF.
     ENDIF.
 
     " handle display format
-    IF result-type = zif_qdrt_c_edm_types=>String AND field_info-is_lowercase = abap_false.
+    IF result-type = zif_qdrt_c_edm_types=>string AND field_info-is_lowercase = abap_false.
       result-display_format = 'UpperCase'.
     ENDIF.
   ENDMETHOD.
@@ -226,6 +234,22 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
 
     ENDIF.
 
+  ENDMETHOD.
+
+
+  METHOD get_dtel_info.
+    CHECK rollname IS NOT INITIAL.
+
+    CALL FUNCTION 'DDIF_FIELDINFO_GET'
+      EXPORTING
+        tabname        = rollname
+        all_types      = abap_true
+      IMPORTING
+        dfies_wa       = result
+      EXCEPTIONS
+        not_found      = 1
+        internal_error = 2
+        OTHERS         = 3.
   ENDMETHOD.
 
 ENDCLASS.

@@ -11,6 +11,20 @@
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
    </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_ENTITY_METADATA_BASE</CLSNAME>
+     <CMPNAME>GET_DTEL_INFO</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Retrieves DFIES info of data element</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_ENTITY_METADATA_BASE</CLSNAME>
+     <CMPNAME>INIT</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Initializes the metadata</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
   </asx:values>
  </asx:abap>
 </abapGit>
