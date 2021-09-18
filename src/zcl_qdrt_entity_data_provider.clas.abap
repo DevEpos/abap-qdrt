@@ -31,8 +31,8 @@ CLASS zcl_qdrt_entity_data_provider DEFINITION
           VALUE(result) TYPE REF TO data
         RAISING
           zcx_qdrt_selection_common,
-      "! <p class="shorttext synchronized" lang="en">Retrieves maximum row count</p>
-      get_max_rows
+      "! <p class="shorttext synchronized" lang="en">Retrieves available row count</p>
+      get_max_row_count
         RETURNING
           VALUE(result) TYPE zqdrt_no_of_lines
         RAISING
@@ -74,7 +74,7 @@ CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
     result = data_selector->select_data( exec_settings ).
   ENDMETHOD.
 
-  METHOD get_max_rows.
+  METHOD get_max_row_count.
     result = data_selector->get_max_count( ).
   ENDMETHOD.
 

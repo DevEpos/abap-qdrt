@@ -116,7 +116,7 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
     ENDIF.
 
     IF query_config-settings-determine_max_rows = abap_true.
-      query_result-max_rows = data_provider->get_max_rows( ).
+      query_result-max_rows = data_provider->get_max_row_count( ).
     ENDIF.
 
   ENDMETHOD.
@@ -138,13 +138,13 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
   METHOD set_response.
     FIELD-SYMBOLS: <result_rows> TYPE ANY TABLE.
     DATA(json) = /ui2/cl_json=>serialize(
-      data          = query_result
-      compress      = abap_true
-      pretty_name   = /ui2/cl_json=>pretty_mode-low_case
+      data             = query_result
+      compress         = abap_true
+      pretty_name      = /ui2/cl_json=>pretty_mode-low_case
       " TODO: make setting available
-*     conversion_exits = abap_true
-      name_mappings = VALUE #(
-        ( abap = 'max_rows' json = 'maxRows' ) ) ).
+      conversion_exits = abap_true
+      name_mappings    = VALUE #(
+           ( abap = 'max_rows' json = 'maxRows' ) ) ).
 
     " Replace any lonly '\r' characters
     DATA(xjson) = /ui2/cl_json=>string_to_raw( json ).

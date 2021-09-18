@@ -29,6 +29,13 @@ CLASS zcl_qdrt_sort_config IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD zif_qdrt_sort_config~add_sort_field.
+    CHECK NOT line_exists( sort_fields[ field_name = field_name ] ).
+
+    sort_fields = VALUE #( BASE sort_fields ( field_name = field_name sort_direction = sort_direction ) ).
+  ENDMETHOD.
+
+
   METHOD zif_qdrt_sort_config~get_order_by_clause.
     FIELD-SYMBOLS:
       <sort_line> TYPE string.
@@ -44,5 +51,9 @@ CLASS zcl_qdrt_sort_config IMPLEMENTATION.
 
   ENDMETHOD.
 
+
+  METHOD zif_qdrt_sort_config~is_empty.
+    result = xsdbool( sort_fields IS INITIAL ).
+  ENDMETHOD.
 
 ENDCLASS.

@@ -26,9 +26,9 @@
     </SEOCOMPOTX>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_QDRT_ENTITY_DATA_PROVIDER</CLSNAME>
-     <CMPNAME>GET_MAX_ROWS</CMPNAME>
+     <CMPNAME>GET_MAX_ROW_COUNT</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Retrieves maximum row count</DESCRIPT>
+     <DESCRIPT>Retrieves available row count</DESCRIPT>
     </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>

@@ -36,6 +36,7 @@ CLASS zcl_qdrt_data_selector_base DEFINITION
       prepare_select,
       create_result_table.
   PRIVATE SECTION.
+    METHODS fix_sort_config.
 ENDCLASS.
 
 
@@ -46,6 +47,9 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
     FIELD-SYMBOLS:
       <query_result> TYPE table.
 
+    IF settings-offset > 0.
+      fix_sort_config( ).
+    ENDIF.
     prepare_select( ).
     create_result_table( ).
     IF query_result IS INITIAL.
@@ -142,5 +146,20 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
 
   ENDMETHOD.
 
+
+  METHOD fix_sort_config.
+    CHECK sort_config->is_empty( ).
+
+    DATA(fields_meta) = metadata_provider->get_fields_metadata( ).
+
+    LOOP AT fields_meta ASSIGNING FIELD-SYMBOL(<field_meta>) WHERE is_key = abap_true.
+      sort_config->add_sort_field( CONV #( <field_meta>-name ) ).
+    ENDLOOP.
+
+    " No key fields (possible if CDS view), add the first field instead as sort field
+    IF sy-subrc <> 0.
+      sort_config->add_sort_field( CONV #( fields_meta[ 1 ]-name ) ).
+    ENDIF.
+  ENDMETHOD.
 
 ENDCLASS.
