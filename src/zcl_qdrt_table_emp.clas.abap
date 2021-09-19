@@ -19,6 +19,10 @@ CLASS zcl_qdrt_table_emp DEFINITION
     DATA:
       fields TYPE STANDARD TABLE OF dfies WITH EMPTY KEY,
       BEGIN OF metadata,
+        BEGIN OF entity,
+          name        TYPE string,
+          description TYPE string,
+        END OF entity,
         fields TYPE zif_qdrt_ty_global=>ty_fields_metadata,
       END OF metadata.
 ENDCLASS.
@@ -79,7 +83,17 @@ CLASS zcl_qdrt_table_emp IMPLEMENTATION.
         internal_error = 2
         OTHERS         = 3.
 
-    LOOP AT fields ASSIGNING FIELD-SYMBOL(<field>).
+    IF sy-subrc <> 0.
+      RETURN.
+    ENDIF.
+
+    metadata-entity = VALUE #(
+      name        = entity_name
+      description = get_short_text(
+        object_type = COND #( WHEN entity_type = zif_qdrt_c_entity_types=>database_table THEN 'TABL' ELSE 'VIEW' )
+        object_name = CONV #( entity_name ) ) ).
+
+    LOOP AT fields ASSIGNING FIELD-SYMBOL(<field>) WHERE datatype <> 'CLNT'.
       metadata-fields = VALUE #( BASE metadata-fields
         ( to_field_metadata( field_info = CORRESPONDING zif_qdrt_ty_global=>ty_field_info(
             <field> MAPPING name               = fieldname

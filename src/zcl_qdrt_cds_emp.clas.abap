@@ -25,6 +25,11 @@ CLASS zcl_qdrt_cds_emp DEFINITION
       parameters         TYPE dd10bvtab,
 
       BEGIN OF metadata,
+        BEGIN OF entity,
+          name        TYPE string,
+          raw_name    TYPE string,
+          description TYPE string,
+        END OF entity,
         fields     TYPE zif_qdrt_ty_global=>ty_fields_metadata,
         parameters TYPE zif_qdrt_ty_global=>ty_fields_metadata,
       END OF metadata.
@@ -118,6 +123,11 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
     ENDTRY.
 
     header_info = headers[ 1 ].
+    metadata-entity = VALUE #(
+      name        = header_info-strucobjn
+      raw_name    = header_info-strucobjn_raw
+      description = header_info-ddtext ).
+
     ddl_view_name = nodes[ 1 ]-dbtabname.
 
     fill_fields_metadata( fields_cds ).
@@ -132,8 +142,8 @@ CLASS zcl_qdrt_cds_emp IMPLEMENTATION.
 
   METHOD fill_fields_metadata.
 
-    LOOP AT fields_cds ASSIGNING FIELD-SYMBOL(<field_cds>).
-      data(dtel_info) = get_dtel_info( <field_cds>-rollname ).
+    LOOP AT fields_cds ASSIGNING FIELD-SYMBOL(<field_cds>) WHERE datatype <> 'CLNT'.
+      DATA(dtel_info) = get_dtel_info( <field_cds>-rollname ).
       DATA(field_info) = CORRESPONDING zif_qdrt_ty_global=>ty_field_info(
         dtel_info MAPPING has_fix_values     = valexi
                           short_description  = scrtext_s

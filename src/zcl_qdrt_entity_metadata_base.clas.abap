@@ -49,7 +49,14 @@ CLASS zcl_qdrt_entity_metadata_base DEFINITION
         IMPORTING
           rollname      TYPE rollname
         RETURNING
-          VALUE(result) TYPE dfies.
+          VALUE(result) TYPE dfies,
+      "! <p class="shorttext synchronized" lang="en">Retrieves object short text</p>
+      get_short_text
+        IMPORTING
+          object_type   TYPE trobjtype
+          object_name   TYPE sobj_name
+        RETURNING
+          VALUE(result) TYPE string.
   PRIVATE SECTION.
 ENDCLASS.
 
@@ -250,6 +257,20 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
         not_found      = 1
         internal_error = 2
         OTHERS         = 3.
+  ENDMETHOD.
+
+
+  METHOD get_short_text.
+    DATA:
+      texts TYPE TABLE OF seu_objtxt.
+
+    texts = VALUE #( ( object = object_type obj_name = object_name ) ).
+
+    CALL FUNCTION 'RS_SHORTTEXT_GET'
+      TABLES
+        obj_tab = texts.
+
+    result = texts[ 1 ]-stext.
   ENDMETHOD.
 
 ENDCLASS.
