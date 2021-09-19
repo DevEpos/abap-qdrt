@@ -16,6 +16,7 @@ CLASS zcl_qdrt_entities_res DEFINITION
         name         TYPE string,
         description  TYPE string,
         package_name TYPE string,
+        is_favorite  TYPE abap_bool,
       END OF ty_entity.
 
     TYPES: BEGIN OF ty_entity_extended.
@@ -24,10 +25,11 @@ CLASS zcl_qdrt_entities_res DEFINITION
     TYPES: END OF ty_entity_extended.
 
     DATA:
-      filter_ranges          TYPE RANGE OF tabname,
-      max_rows               TYPE i,
-      extended_search_result TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY,
-      entity_type_range      TYPE RANGE OF zif_qdrt_ty_global=>ty_entity_type.
+      filter_ranges             TYPE RANGE OF tabname,
+      max_rows                  TYPE i,
+      extended_search_result    TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY,
+      entity_type_range         TYPE RANGE OF zif_qdrt_ty_global=>ty_entity_type,
+      entity_search_scope_range TYPE RANGE OF abap_bool.
 
     METHODS:
       read_uri_params,
@@ -78,6 +80,11 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
     IF entity_type IS NOT INITIAL.
       entity_type_range = VALUE #( ( sign = 'I' option = 'EQ' low = entity_type ) ).
     ENDIF.
+
+    DATA(search_scope) = mo_request->get_uri_query_parameter( iv_name = 'scope' ).
+    IF search_scope = 'favorites'.
+      entity_search_scope_range = VALUE #( ( sign = 'I' option = 'EQ' low = abap_true ) ).
+    ENDIF.
   ENDMETHOD.
 
 
@@ -86,12 +93,17 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
            rawentityid AS name,
            altentityid AS alt_name,
            description,
-           developmentpackage AS package_name
-      FROM zqdrt_i_dbentity
-      WHERE entityid IN @filter_ranges
+           developmentpackage AS package_name,
+           fav~isfavorite AS is_favorite
+      FROM zqdrt_i_dbentity AS entity
+        LEFT OUTER JOIN zqdrt_i_dbentityfavorite AS fav
+          ON  entity~entityid = fav~entityid
+          AND entity~type     = fav~entitytype
+      WHERE entity~entityid IN @filter_ranges
         AND type IN @entity_type_range
+        AND fav~isfavorite IN @entity_search_scope_range
       ORDER BY type,
-               entityid
+               entity~entityid
       INTO CORRESPONDING FIELDS OF TABLE @extended_search_result
       UP TO @max_rows ROWS.
   ENDMETHOD.
