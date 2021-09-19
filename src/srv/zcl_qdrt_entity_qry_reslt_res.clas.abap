@@ -139,7 +139,7 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
     FIELD-SYMBOLS: <result_rows> TYPE ANY TABLE.
     DATA(json) = /ui2/cl_json=>serialize(
       data             = query_result
-      compress         = abap_true
+*      compress         = abap_true
       pretty_name      = /ui2/cl_json=>pretty_mode-low_case
       " TODO: make setting available
       conversion_exits = abap_true
