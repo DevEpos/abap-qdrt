@@ -108,6 +108,7 @@ CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
         filter_converter->convert(
           EXPORTING
             metadata_provider = metadata_provider
+            filter_type       = zif_qdrt_c_global=>c_field_types-parameter
           CHANGING
             filters           = param_filters ).
 

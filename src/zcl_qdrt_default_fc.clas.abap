@@ -52,7 +52,9 @@ CLASS zcl_qdrt_default_fc IMPLEMENTATION.
 
     LOOP AT filters ASSIGNING FIELD-SYMBOL(<filter>).
 
-      DATA(field_metadata) = metadata_provider->get_field_metadata( fieldname = CONV #( <filter>-field_name ) ).
+      DATA(field_metadata) = metadata_provider->get_field_metadata(
+        fieldname = CONV #( <filter>-field_name )
+        type      = filter_type ).
       CHECK field_metadata IS NOT INITIAL.
 
       conv_filter_ranges_to_int(
@@ -99,19 +101,24 @@ CLASS zcl_qdrt_default_fc IMPLEMENTATION.
            zif_qdrt_c_ext_filter_ops=>starts_with OR
            zif_qdrt_c_ext_filter_ops=>ends_with.
 
-        CASE filter_range-operation.
-          WHEN zif_qdrt_c_ext_filter_ops=>contains.
-            contains_regex_pattern = `*&1*`.
+        " Special handling fields with length 1.
+        IF field_metadata-max_length = 1.
+          filter_range-operation = zif_qdrt_c_filter_ops=>equals.
+        ELSE.
+          CASE filter_range-operation.
+            WHEN zif_qdrt_c_ext_filter_ops=>contains.
+              contains_regex_pattern = `*&1*`.
 
-          WHEN zif_qdrt_c_ext_filter_ops=>starts_with.
-            contains_regex_pattern = `&1*`.
+            WHEN zif_qdrt_c_ext_filter_ops=>starts_with.
+              contains_regex_pattern = `&1*`.
 
-          WHEN zif_qdrt_c_ext_filter_ops=>ends_with.
-            contains_regex_pattern = `*&1`.
-        ENDCASE.
+            WHEN zif_qdrt_c_ext_filter_ops=>ends_with.
+              contains_regex_pattern = `*&1`.
+          ENDCASE.
 
-        filter_range-operation = zif_qdrt_c_filter_ops=>contains_pattern.
-        filter_range-value1 = replace( val = contains_regex_pattern sub = '&1' with = filter_range-value1 ).
+          filter_range-operation = zif_qdrt_c_filter_ops=>contains_pattern.
+          filter_range-value1 = replace( val = contains_regex_pattern sub = '&1' with = filter_range-value1 ).
+        ENDIF.
 
       WHEN zif_qdrt_c_ext_filter_ops=>empty.
         filter_range-operation = zif_qdrt_c_filter_ops=>equals.
