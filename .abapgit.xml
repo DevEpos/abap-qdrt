@@ -12,6 +12,7 @@
     <item>/package.json</item>
     <item>/abaplint.json</item>
     <item>/src/*.ddls.baseinfo</item>
+    <item>/test</item>
    </IGNORE>
   </DATA>
  </asx:values>

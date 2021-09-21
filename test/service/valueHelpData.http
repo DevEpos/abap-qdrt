@@ -1,0 +1,30 @@
+###################################################
+# Types of value helps
+## DomainFixValues = "DomainFixValues",
+## ElementaryDDICSearchHelp = "ElementaryDDICSearchHelp",
+## CollectiveDDICSearchHelp = "CollectiveDDICSearchHelp",
+## CheckTable = "CheckTable",
+## Date = "Date",
+## CdsAnnotation = "CdsAnnotation"
+###################################################
+
+# @name  csrf_fetch
+HEAD {{sap_dev_server}}/sap/zqdrtrest/ HTTP/1.1
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+X-CSRF-Token: Fetch
+
+###
+
+# Get Value help data for TADIR field GENFLAG (i.e. Fix values)
+POST {{sap_dev_server}}/sap/zqdrtrest/valuehelpdata HTTP/1.1
+X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+Content-Type: application/json
+
+{
+    "valueHelpName": "GENFLAG",
+    "type": "DomainFixValues",
+    "filters": [],
+    "sortCond": [],
+    "maxRows": 500
+}
