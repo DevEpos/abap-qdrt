@@ -30,6 +30,12 @@
      <LANGU>E</LANGU>
      <DESCRIPT>Retrieves available row count</DESCRIPT>
     </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_ENTITY_DATA_PROVIDER</CLSNAME>
+     <CMPNAME>GET_METADATA</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Retrieves metadata of entity</DESCRIPT>
+    </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
  </asx:abap>

@@ -3,22 +3,14 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_QDRT_REST_REQ_UTIL</CLSNAME>
+    <CLSNAME>ZCL_QDRT_DOM_FIX_VALUES_VHDP</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Utilty for REST request handling</DESCRIPT>
+    <DESCRIPT>VH data provider for domains with fix values</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
    </VSEOCLASS>
-   <DESCRIPTIONS>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_QDRT_REST_REQ_UTIL</CLSNAME>
-     <CMPNAME>CHECK_EMPTY_URI_ATTRIBUTE</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Checks if uri attribute was supplied</DESCRIPT>
-    </SEOCOMPOTX>
-   </DESCRIPTIONS>
   </asx:values>
  </asx:abap>
 </abapGit>

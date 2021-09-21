@@ -11,20 +11,19 @@ CLASS zcl_qdrt_message_helper DEFINITION
         IMPORTING
           text TYPE string,
       "! <p class="shorttext synchronized" lang="en">Prints exception message</p>
-      print_exc_message
+      get_exc_message
         IMPORTING
-          textid          TYPE scx_t100key
-          print_to_screen TYPE abap_bool DEFAULT abap_true
-          previous_exc    TYPE REF TO cx_root
-          display_type    TYPE syst_msgty DEFAULT 'E'
-          message_type    TYPE syst_msgty DEFAULT 'E'
-          exc_message     TYPE REF TO zif_qdrt_exception_message
-          msgv1           TYPE sy-msgv1 OPTIONAL
-          msgv2           TYPE sy-msgv2 OPTIONAL
-          msgv3           TYPE sy-msgv3 OPTIONAL
-          msgv4           TYPE sy-msgv4 OPTIONAL
+          textid         TYPE scx_t100key
+          previous_exc   TYPE REF TO cx_root
+          display_type   TYPE syst_msgty DEFAULT 'E'
+          message_type   TYPE syst_msgty DEFAULT 'E'
+          exc_message    TYPE REF TO zif_qdrt_exception_message
+          msgv1          TYPE sy-msgv1 OPTIONAL
+          msgv2          TYPE sy-msgv2 OPTIONAL
+          msgv3          TYPE sy-msgv3 OPTIONAL
+          msgv4          TYPE sy-msgv4 OPTIONAL
         RETURNING
-          VALUE(message)  TYPE string.
+          VALUE(message) TYPE string.
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES:
@@ -66,51 +65,28 @@ CLASS zcl_qdrt_message_helper IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD print_exc_message.
+  METHOD get_exc_message.
     IF textid-msgid = 'SY' AND textid-msgno = 530.
 
       " try to print message of previous exception
       IF previous_exc IS BOUND.
         TRY.
             DATA(previous_exc_msg) = CAST zif_qdrt_exception_message( previous_exc ).
-            IF print_to_screen = abap_true.
-              message = previous_exc_msg->print(
-                iv_msg_type     = message_type
-                iv_display_type = display_type
-                if_to_screen    = print_to_screen ).
-            ELSE.
-              message = previous_exc_msg->get_message( ).
-            ENDIF.
+            message = previous_exc_msg->get_message( ).
           CATCH cx_sy_move_cast_error.
             " Return message from non db browser exception
-            IF print_to_screen = abap_true.
-              MESSAGE previous_exc->get_text( ) TYPE message_type DISPLAY LIKE display_type.
-            ELSE.
-              message = previous_exc->get_text( ).
-            ENDIF.
+            message = previous_exc->get_text( ).
         ENDTRY.
       ENDIF.
     ELSE.
-
-      IF print_to_screen = abap_true.
-        MESSAGE ID textid-msgid
-                TYPE   message_type
-                NUMBER textid-msgno
-                WITH   msgv1
-                       msgv2
-                       msgv3
-                       msgv4
-                DISPLAY LIKE display_type.
-      ELSE.
-        MESSAGE ID textid-msgid
-                TYPE   'E'
-                NUMBER textid-msgno
-                WITH   msgv1
-                       msgv2
-                       msgv3
-                       msgv4
-                INTO message.
-      ENDIF.
+      MESSAGE ID textid-msgid
+              TYPE   'E'
+              NUMBER textid-msgno
+              WITH   msgv1
+                     msgv2
+                     msgv3
+                     msgv4
+              INTO message.
     ENDIF.
   ENDMETHOD.
 

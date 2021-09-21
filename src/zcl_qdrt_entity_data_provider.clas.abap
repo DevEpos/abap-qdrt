@@ -36,14 +36,19 @@ CLASS zcl_qdrt_entity_data_provider DEFINITION
         RETURNING
           VALUE(result) TYPE zqdrt_no_of_lines
         RAISING
-          zcx_qdrt_selection_common.
+          zcx_qdrt_selection_common,
+      "! <p class="shorttext synchronized" lang="en">Retrieves metadata of entity</p>
+      get_metadata
+        RETURNING
+          VALUE(result) TYPE REF TO data.
   PROTECTED SECTION.
   PRIVATE SECTION.
     DATA:
-      entity_name   TYPE zif_qdrt_ty_global=>ty_entity_name,
-      entity_type   TYPE zif_qdrt_ty_global=>ty_entity_type,
-      data_selector TYPE REF TO zif_qdrt_data_selector,
-      exec_settings TYPE zif_qdrt_ty_global=>ty_query_exec_settings.
+      entity_name       TYPE zif_qdrt_ty_global=>ty_entity_name,
+      entity_type       TYPE zif_qdrt_ty_global=>ty_entity_type,
+      data_selector     TYPE REF TO zif_qdrt_data_selector,
+      exec_settings     TYPE zif_qdrt_ty_global=>ty_query_exec_settings,
+      metadata_provider TYPE REF TO zif_qdrt_entity_metadata_prov.
 
     METHODS:
       init_data_selector
@@ -52,7 +57,7 @@ CLASS zcl_qdrt_entity_data_provider DEFINITION
         RETURNING
           VALUE(result) TYPE REF TO zif_qdrt_data_selector
         RAISING
-          zcx_qdrt_conversion_error.
+          zcx_qdrt_appl_error.
 ENDCLASS.
 
 
@@ -78,11 +83,15 @@ CLASS zcl_qdrt_entity_data_provider IMPLEMENTATION.
     result = data_selector->get_max_count( ).
   ENDMETHOD.
 
+  METHOD get_metadata.
+    result = metadata_provider->get_metadata( ).
+  ENDMETHOD.
+
 
   METHOD init_data_selector.
     DATA: filter_provider TYPE REF TO zif_qdrt_filter_provider.
 
-    DATA(metadata_provider) = zcl_qdrt_provider_factory=>create_entity_metadata(
+    metadata_provider = zcl_qdrt_provider_factory=>create_entity_metadata(
       entity_name = entity_name
       entity_type = entity_type ).
 

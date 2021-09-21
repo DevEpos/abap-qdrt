@@ -125,6 +125,12 @@
      <LANGU>E</LANGU>
      <DESCRIPT>Result of SQL query</DESCRIPT>
     </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_TY_GLOBAL</CLSNAME>
+     <CMPNAME>TY_VALUE_HELP_TYPE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Type of a value help</DESCRIPT>
+    </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
  </asx:abap>

@@ -24,23 +24,31 @@ CLASS zcx_qdrt_appl_error DEFINITION
       END OF general_error.
 
     DATA:
-      msgv1 TYPE sy-msgv1,
-      msgv2 TYPE sy-msgv2,
-      msgv3 TYPE sy-msgv3,
-      msgv4 TYPE sy-msgv4.
+      msgv1 TYPE sy-msgv1 READ-ONLY,
+      msgv2 TYPE sy-msgv2 READ-ONLY,
+      msgv3 TYPE sy-msgv3 READ-ONLY,
+      msgv4 TYPE sy-msgv4 READ-ONLY.
 
     METHODS:
       constructor
         IMPORTING
-          text     TYPE string OPTIONAL
-          textid   LIKE if_t100_message=>t100key OPTIONAL
-          previous LIKE previous OPTIONAL
-          msgv1    TYPE sy-msgv1 OPTIONAL
-          msgv2    TYPE sy-msgv2 OPTIONAL
-          msgv3    TYPE sy-msgv3 OPTIONAL
-          msgv4    TYPE sy-msgv4 OPTIONAL.
+          text           TYPE string OPTIONAL
+          status         TYPE i DEFAULT cl_rest_status_code=>gc_client_error_bad_request
+          save_callstack TYPE abap_bool DEFAULT abap_true
+          textid         LIKE if_t100_message=>t100key OPTIONAL
+          previous       LIKE previous OPTIONAL
+          msgv1          TYPE sy-msgv1 OPTIONAL
+          msgv2          TYPE sy-msgv2 OPTIONAL
+          msgv3          TYPE sy-msgv3 OPTIONAL
+          msgv4          TYPE sy-msgv4 OPTIONAL.
   PROTECTED SECTION.
   PRIVATE SECTION.
+    ALIASES:
+      status    FOR zif_qdrt_exception_message~http_status,
+      callstack FOR zif_qdrt_exception_message~callstack.
+
+    METHODS:
+      save_callstack.
 ENDCLASS.
 
 
@@ -56,6 +64,7 @@ CLASS zcx_qdrt_appl_error IMPLEMENTATION.
         previous = previous.
 
     CLEAR me->textid.
+    me->status = status.
 
     IF text IS NOT INITIAL.
       fill_t100_from_sy = abap_true.
@@ -86,35 +95,46 @@ CLASS zcx_qdrt_appl_error IMPLEMENTATION.
         attr4 = 'MSGV4' ).
     ENDIF.
 
+    IF save_callstack = abap_true.
+      save_callstack( ).
+    ENDIF.
+
   ENDMETHOD.
 
 
   METHOD zif_qdrt_exception_message~get_message.
-    result = zcl_qdrt_message_helper=>print_exc_message(
-      textid          = if_t100_message~t100key
-      print_to_screen = abap_false
-      previous_exc    = previous
-      exc_message     = me
-      msgv1           = msgv1
-      msgv2           = msgv2
-      msgv3           = msgv3
-      msgv4           = msgv4 ).
+    result = zcl_qdrt_message_helper=>get_exc_message(
+      textid       = if_t100_message~t100key
+      previous_exc = previous
+      exc_message  = me
+      msgv1        = msgv1
+      msgv2        = msgv2
+      msgv3        = msgv3
+      msgv4        = msgv4 ).
   ENDMETHOD.
 
 
-  METHOD zif_qdrt_exception_message~print.
-    zcl_qdrt_message_helper=>print_exc_message(
-      textid          = if_t100_message~t100key
-      display_type    = iv_display_type
-      print_to_screen = if_to_screen
-      message_type    = iv_msg_type
-      previous_exc    = previous
-      exc_message     = me
-      msgv1           = msgv1
-      msgv2           = msgv2
-      msgv3           = msgv3
-      msgv4           = msgv4 ).
-  ENDMETHOD.
+  METHOD save_callstack.
+    DATA:
+      l_callstack TYPE abap_callstack.
 
+    CALL FUNCTION 'SYSTEM_CALLSTACK'
+      IMPORTING
+        callstack = l_callstack.
+
+    LOOP AT l_callstack ASSIGNING FIELD-SYMBOL(<callstack_line>).
+      " skipfirst line in stack as it is this method call
+      CHECK <callstack_line>-mainprogram NP 'ZCX_QDRT*'.
+
+      " skip all stack lines starting from CL_REST_RESOURCE as they are no longer
+      "  specific to this application
+      IF <callstack_line>-mainprogram CP 'CL_REST_RESOURCE*'.
+        EXIT.
+      ENDIF.
+
+      APPEND <callstack_line> TO callstack.
+    ENDLOOP.
+
+  ENDMETHOD.
 
 ENDCLASS.
