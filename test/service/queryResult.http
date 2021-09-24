@@ -72,8 +72,7 @@ Content-Type: application/json
 {
     "settings": {
         "maxRows": 10,
-        "determineMaxRows": true,
-        "readMetadata": false
+        "determineMaxRows": true
     },
     "outputFields": [
         {
