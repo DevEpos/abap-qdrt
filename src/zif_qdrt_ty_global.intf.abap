@@ -5,6 +5,8 @@ INTERFACE zif_qdrt_ty_global
   TYPES:
     ty_generic_value        TYPE c LENGTH 132,
     ty_tabname_range        TYPE RANGE OF tabname,
+    "! <p class="shorttext synchronized" lang="en">Type of a value help</p>
+    ty_value_help_type      TYPE c LENGTH 30,
     "! <p class="shorttext synchronized" lang="en">Type of database entity</p>
     ty_entity_type          TYPE string,
     "! <p class="shorttext synchronized" lang="en">Name of database entity</p>

@@ -24,7 +24,7 @@ CLASS zcl_qdrt_entity_favorite_res DEFINITION
     METHODS:
       read_uri_params
         RAISING
-          zcx_qdrt_rest_error.
+          zcx_qdrt_appl_error.
 ENDCLASS.
 
 
@@ -42,14 +42,13 @@ CLASS zcl_qdrt_entity_favorite_res IMPLEMENTATION.
           mo_response->set_status( cl_rest_status_code=>gc_success_ok ).
           COMMIT WORK.
         ELSE.
-          mo_response->set_status( cl_rest_status_code=>gc_client_error_not_found ).
-          mo_response->set_reason(
-            |No Favorite for Entity: { entity_name }, Type: { entity_type }, User: { sy-uname } found| ).
+          zcl_qdrt_rest_error_response=>create( mo_response
+            )->set_status( cl_rest_status_code=>gc_client_error_not_found
+            )->set_body_from_text(
+              |No Favorite for Entity: { entity_name }, Type: { entity_type }, User: { sy-uname } found| ).
         ENDIF.
-      CATCH zcx_qdrt_rest_error INTO DATA(rest_error).
-        mo_response->set_status( rest_error->status ).
-        mo_response->set_reason( rest_error->reason ).
-        RETURN.
+      CATCH zcx_qdrt_appl_error INTO DATA(rest_error).
+        zcl_qdrt_rest_error_response=>create( response = mo_response )->set_body_from_exc( rest_error ).
     ENDTRY.
   ENDMETHOD.
 
@@ -66,14 +65,13 @@ CLASS zcl_qdrt_entity_favorite_res IMPLEMENTATION.
           mo_response->set_status( cl_rest_status_code=>gc_success_created ).
           COMMIT WORK.
         ELSE.
-          mo_response->set_status( cl_rest_status_code=>gc_client_error_conflict ).
-          mo_response->set_reason(
-            |Favorite for Entity: { entity_name }, Type: { entity_type }, User: { sy-uname } already exists| ).
+          zcl_qdrt_rest_error_response=>create( mo_response
+            )->set_status( cl_rest_status_code=>gc_client_error_conflict
+            )->set_body_from_text(
+              |Favorite for Entity: { entity_name }, Type: { entity_type }, User: { sy-uname } already exists| ).
         ENDIF.
-      CATCH zcx_qdrt_rest_error INTO DATA(rest_error).
-        mo_response->set_status( rest_error->status ).
-        mo_response->set_reason( rest_error->reason ).
-        RETURN.
+      CATCH zcx_qdrt_appl_error INTO DATA(rest_error).
+        zcl_qdrt_rest_error_response=>create( response = mo_response )->set_body_from_exc( rest_error ).
     ENDTRY.
   ENDMETHOD.
 
@@ -82,14 +80,14 @@ CLASS zcl_qdrt_entity_favorite_res IMPLEMENTATION.
     entity_name = to_upper( mo_request->get_uri_attribute(
       iv_name    = c_uri_attributes-name
       iv_encoded = abap_false ) ).
-    zcl_qdrt_rest_req_util=>check_empty_uri_attribute(
+    zcl_qdrt_rest_request_util=>check_empty_uri_attribute(
       uri_attribute = c_uri_attributes-name
       value         = entity_name ).
 
     entity_type = to_upper( mo_request->get_uri_attribute(
       iv_name    = c_uri_attributes-type
       iv_encoded = abap_false  ) ).
-    zcl_qdrt_rest_req_util=>check_empty_uri_attribute(
+    zcl_qdrt_rest_request_util=>check_empty_uri_attribute(
       uri_attribute = c_uri_attributes-type
       value         = entity_type ).
   ENDMETHOD.

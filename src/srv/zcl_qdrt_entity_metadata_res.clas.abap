@@ -20,7 +20,7 @@ CLASS zcl_qdrt_entity_metadata_res DEFINITION
         RETURNING
           VALUE(result) TYPE REF TO zif_qdrt_entity_metadata_prov
         RAISING
-          zcx_qdrt_rest_error.
+          zcx_qdrt_appl_error.
 ENDCLASS.
 
 
@@ -32,9 +32,8 @@ CLASS zcl_qdrt_entity_metadata_res IMPLEMENTATION.
 
     TRY.
         DATA(entity_metadata) = get_entity_metadata( ).
-      CATCH zcx_qdrt_rest_error INTO DATA(rest_error).
-        mo_response->set_status( rest_error->status ).
-        mo_response->set_reason( rest_error->reason ).
+      CATCH zcx_qdrt_appl_error INTO DATA(rest_error).
+        zcl_qdrt_rest_error_response=>create( response = mo_response )->set_body_from_exc( rest_error ).
         RETURN.
     ENDTRY.
 
@@ -57,31 +56,17 @@ CLASS zcl_qdrt_entity_metadata_res IMPLEMENTATION.
 
   METHOD get_entity_metadata.
     DATA(entity_name) = to_upper( mo_request->get_uri_attribute( iv_name = c_name_attribute iv_encoded = abap_false ) ).
-    zcl_qdrt_rest_req_util=>check_empty_uri_attribute(
+    zcl_qdrt_rest_request_util=>check_empty_uri_attribute(
       uri_attribute = c_name_attribute
       value         = entity_name ).
     DATA(entity_type) = to_upper( mo_request->get_uri_attribute( iv_name = c_type_attribute iv_encoded = abap_false  ) ).
-    zcl_qdrt_rest_req_util=>check_empty_uri_attribute(
+    zcl_qdrt_rest_request_util=>check_empty_uri_attribute(
       uri_attribute = c_type_attribute
       value         = entity_type ).
 
     result = zcl_qdrt_provider_factory=>create_entity_metadata(
       entity_name = CONV #( entity_name )
       entity_type = entity_type ).
-
-    IF result IS INITIAL.
-      RAISE EXCEPTION TYPE zcx_qdrt_rest_error
-        EXPORTING
-          status = cl_rest_status_code=>gc_client_error_not_found
-          reason = |No metadata provider found for type '{ entity_type }'|.
-    ENDIF.
-
-    IF result->entity_exists( ) = abap_false.
-      RAISE EXCEPTION TYPE zcx_qdrt_rest_error
-        EXPORTING
-          status = cl_rest_status_code=>gc_client_error_not_found
-          reason = |Entity with type '{ entity_type }' and name '{ entity_name }' does not exist|.
-    ENDIF.
   ENDMETHOD.
 
 ENDCLASS.

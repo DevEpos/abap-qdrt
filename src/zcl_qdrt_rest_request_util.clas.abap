@@ -1,5 +1,5 @@
 "! <p class="shorttext synchronized" lang="en">Utilty for REST request handling</p>
-CLASS zcl_qdrt_rest_req_util DEFINITION
+CLASS zcl_qdrt_rest_request_util DEFINITION
   PUBLIC
   FINAL
   CREATE PRIVATE.
@@ -12,23 +12,23 @@ CLASS zcl_qdrt_rest_req_util DEFINITION
           uri_attribute TYPE string
           value         TYPE any
         RAISING
-          zcx_qdrt_rest_error.
+          zcx_qdrt_appl_error.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS zcl_qdrt_rest_req_util IMPLEMENTATION.
+CLASS zcl_qdrt_rest_request_util IMPLEMENTATION.
 
 
   METHOD check_empty_uri_attribute.
     CHECK value IS INITIAL.
 
-    RAISE EXCEPTION TYPE zcx_qdrt_rest_error
+    RAISE EXCEPTION TYPE zcx_qdrt_appl_error
       EXPORTING
         status = cl_rest_status_code=>gc_client_error_bad_request
-        reason = |URI attribute '{ uri_attribute }' is missing|.
+        text   = |URI attribute '{ uri_attribute }' is missing|.
   ENDMETHOD.
 
 

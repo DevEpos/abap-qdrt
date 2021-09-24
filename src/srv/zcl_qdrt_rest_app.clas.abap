@@ -48,6 +48,14 @@ CLASS zcl_qdrt_rest_app IMPLEMENTATION.
       iv_template      = '/entities/{type}/{name}/favorite'
       iv_handler_class = 'ZCL_QDRT_ENTITY_FAVORITE_RES' ).
 
+    router->attach(
+      iv_template      = '/entities/{type}/{name}/vhMetadata'
+      iv_handler_class = 'ZCL_QDRT_ENTITY_VH_META_RES' ).
+
+    router->attach(
+      iv_template      = '/valuehelpdata'
+      iv_handler_class = 'ZCL_QDRT_VH_DATA_RES' ).
+
     ro_root_handler = router.
   ENDMETHOD.
 
