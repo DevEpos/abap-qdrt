@@ -57,7 +57,7 @@ CLASS zcl_qdrt_rest_app IMPLEMENTATION.
       iv_handler_class = 'ZCL_QDRT_VH_META_RES' ).
 
     router->attach(
-      iv_template      = '/valuehelpdata'
+      iv_template      = '/valueHelpData'
       iv_handler_class = 'ZCL_QDRT_VH_DATA_RES' ).
 
     ro_root_handler = router.
