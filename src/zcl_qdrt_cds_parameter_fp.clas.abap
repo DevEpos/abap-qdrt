@@ -26,8 +26,6 @@ CLASS zcl_qdrt_cds_parameter_fp IMPLEMENTATION.
 
   METHOD constructor.
     me->param_filters = param_filters.
-    " clear all irrelevant filters
-    DELETE me->param_filters WHERE field_name CP |{ zif_qdrt_c_global=>c_param_filter_prefix }*|.
   ENDMETHOD.
 
 

@@ -3,9 +3,9 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_QDRT_ENTITY_METADATA_BASE</CLSNAME>
+    <CLSNAME>ZCL_QDRT_TEXT_UTIL</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Fields config base</DESCRIPT>
+    <DESCRIPT>Text Utitlity</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
@@ -13,22 +13,16 @@
    </VSEOCLASS>
    <DESCRIPTIONS>
     <SEOCOMPOTX>
-     <CLSNAME>ZCL_QDRT_ENTITY_METADATA_BASE</CLSNAME>
-     <CMPNAME>GET_DTEL_INFO</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Retrieves DFIES info of data element</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_QDRT_ENTITY_METADATA_BASE</CLSNAME>
+     <CLSNAME>ZCL_QDRT_TEXT_UTIL</CLSNAME>
      <CMPNAME>GET_SHORT_TEXT</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Retrieves object short text</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
-     <CLSNAME>ZCL_QDRT_ENTITY_METADATA_BASE</CLSNAME>
-     <CMPNAME>INIT</CMPNAME>
+     <CLSNAME>ZCL_QDRT_TEXT_UTIL</CLSNAME>
+     <CMPNAME>GET_SHORT_TEXTS</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Initializes the metadata</DESCRIPT>
+     <DESCRIPT>Retrieve short texts for repository objects</DESCRIPT>
     </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>

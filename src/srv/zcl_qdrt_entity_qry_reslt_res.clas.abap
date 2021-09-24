@@ -11,10 +11,6 @@ CLASS zcl_qdrt_entity_qry_reslt_res DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
     CONSTANTS:
-      BEGIN OF c_uri_params,
-        read_metadata TYPE string VALUE 'readMetadata',
-      END OF c_uri_params,
-
       BEGIN OF c_uri_attributes,
         name TYPE string VALUE 'name',
         type TYPE string VALUE 'type',
@@ -32,15 +28,13 @@ CLASS zcl_qdrt_entity_qry_reslt_res DEFINITION
       END OF query_result,
       data_provider TYPE REF TO zcl_qdrt_entity_data_provider.
 
-    METHODS:
-      parse_body,
+    METHODS: parse_body,
       read_uri_params
         RAISING
           zcx_qdrt_appl_error,
       execute_selection
         RAISING
           zcx_qdrt_appl_error,
-      retrieve_metadata,
       set_response.
 ENDCLASS.
 
@@ -63,7 +57,6 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
 
     TRY.
         execute_selection( ).
-        retrieve_metadata( ).
         set_response( ).
       CATCH zcx_qdrt_appl_error INTO appl_error.
         zcl_qdrt_rest_error_response=>create( response = mo_response )->set_body_from_exc( appl_error ).
@@ -119,13 +112,6 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
       query_result-max_rows = data_provider->get_max_row_count( ).
     ENDIF.
 
-  ENDMETHOD.
-
-
-  METHOD retrieve_metadata.
-    CHECK query_config-settings-read_metadata = abap_true.
-
-    query_result-metadata = data_provider->get_metadata( ).
   ENDMETHOD.
 
 

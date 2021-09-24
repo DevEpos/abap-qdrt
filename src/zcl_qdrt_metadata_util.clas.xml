@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_QDRT_METADATA_UTIL</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>Utility for Metadata</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_METADATA_UTIL</CLSNAME>
+     <CMPNAME>CONVERT_TO_FIELD_METADATA</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Converts field info to field metadata</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_METADATA_UTIL</CLSNAME>
+     <CMPNAME>CONVERT_TO_VH_METADATA</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Converts shlp description to vh metadata</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_METADATA_UTIL</CLSNAME>
+     <CMPNAME>GET_DTEL_INFO</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Retrieves DFIES info of data element</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_METADATA_UTIL</CLSNAME>
+     <CMPNAME>IS_BOOLEAN_TYPE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Checks if given rollname has boolean like domain</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

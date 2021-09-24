@@ -3,25 +3,25 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOINTERF>
-    <CLSNAME>ZIF_QDRT_C_GLOBAL</CLSNAME>
+    <CLSNAME>ZIF_QDRT_VH_METADATA_PROVIDER</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Global constants for Quick Data Reporter API</DESCRIPT>
+    <DESCRIPT>Metdata provider for value helps</DESCRIPT>
     <EXPOSURE>2</EXPOSURE>
     <STATE>1</STATE>
     <UNICODE>X</UNICODE>
    </VSEOINTERF>
    <DESCRIPTIONS>
     <SEOCOMPOTX>
-     <CLSNAME>ZIF_QDRT_C_GLOBAL</CLSNAME>
-     <CMPNAME>C_CUSTOM_FIELD_NAMES</CMPNAME>
+     <CLSNAME>ZIF_QDRT_VH_METADATA_PROVIDER</CLSNAME>
+     <CMPNAME>GET_FILTER_FIELDS</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Constants for custom fieldnames</DESCRIPT>
+     <DESCRIPT>Retrieves list of filter fields</DESCRIPT>
     </SEOCOMPOTX>
     <SEOCOMPOTX>
-     <CLSNAME>ZIF_QDRT_C_GLOBAL</CLSNAME>
-     <CMPNAME>C_FIELD_TYPES</CMPNAME>
+     <CLSNAME>ZIF_QDRT_VH_METADATA_PROVIDER</CLSNAME>
+     <CMPNAME>GET_OUTPUT_FIELDS</CMPNAME>
      <LANGU>E</LANGU>
-     <DESCRIPT>Types of fields</DESCRIPT>
+     <DESCRIPT>Retrieves list of output fields</DESCRIPT>
     </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>

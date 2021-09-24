@@ -1,5 +1,5 @@
 "! <p class="shorttext synchronized" lang="en">VH data provider for elementary search help</p>
-CLASS zcl_qdrt_simple_shlp_vhdp DEFINITION
+CLASS zcl_qdrt_elementary_shlp_vhdp DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC.
@@ -21,7 +21,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_qdrt_simple_shlp_vhdp IMPLEMENTATION.
+CLASS zcl_qdrt_elementary_shlp_vhdp IMPLEMENTATION.
 
 
   METHOD constructor.
@@ -45,21 +45,22 @@ CLASS zcl_qdrt_simple_shlp_vhdp IMPLEMENTATION.
       IMPORTING
         shlp     = search_help.
 
-    IF search_help-interface is INITIAL.
+    IF search_help-interface IS INITIAL.
       RAISE EXCEPTION TYPE zcx_qdrt_appl_error
         EXPORTING
           text = |No elementary search help for '{ value_help_name }' exists|.
     ENDIF.
 
     " create result table from search help field definition
-    LOOP AT search_help-fieldprop ASSIGNING FIELD-SYMBOL(<sh_field_prop>) WHERE shlplispos > 0.
+    LOOP AT search_help-fieldprop ASSIGNING FIELD-SYMBOL(<sh_field_prop>) WHERE shlplispos > 0
+                                                                             OR shlpoutput = abap_true.
       ASSIGN search_help-fielddescr[ fieldname = <sh_field_prop>-fieldname ] TO FIELD-SYMBOL(<sh_field_descr>).
       CHECK sy-subrc = 0.
 
       sh_result_tab_comps = VALUE #( BASE sh_result_tab_comps
         ( name = <sh_field_descr>-fieldname
           type = CAST #(
-            cl_abap_typedescr=>describe_by_name( <sh_field_descr>-rollname ) ) ) ). "|{ <sh_field_descr>-tabname }-{ <sh_field_descr>-fieldname }| ) ) ) ).
+            cl_abap_typedescr=>describe_by_name( <sh_field_descr>-rollname ) ) ) ).
 
     ENDLOOP.
     DATA(sh_result_structdescr) = cl_abap_structdescr=>create( p_components = sh_result_tab_comps ).

@@ -1,16 +1,14 @@
 "! <p class="shorttext synchronized" lang="en">Metadata provider for DB entity</p>
 INTERFACE zif_qdrt_entity_metadata_prov
-  PUBLIC .
+  PUBLIC.
+
+  INTERFACES zif_qdrt_metadata_provider.
+
+  ALIASES:
+    get_metadata FOR zif_qdrt_metadata_provider~get_metadata,
+    entity_exists FOR zif_qdrt_metadata_provider~entity_exists.
 
   METHODS:
-    "! <p class="shorttext synchronized" lang="en">Tests if entity exists</p>
-    entity_exists
-      RETURNING
-        VALUE(result) TYPE abap_bool,
-    "! <p class="shorttext synchronized" lang="en">Retrieves metadata of entity</p>
-    get_metadata
-      RETURNING
-        VALUE(result) TYPE REF TO data,
     "! <p class="shorttext synchronized" lang="en">Retrieve field configuration of field</p>
     get_field_config
       IMPORTING

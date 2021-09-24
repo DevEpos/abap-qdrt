@@ -1,85 +1,50 @@
-"! <p class="shorttext synchronized" lang="en">Fields config base</p>
-CLASS zcl_qdrt_entity_metadata_base DEFINITION
+"! <p class="shorttext synchronized" lang="en">Utility for Metadata</p>
+CLASS zcl_qdrt_metadata_util DEFINITION
   PUBLIC
-  ABSTRACT
-  CREATE PROTECTED.
+  FINAL
+  CREATE PUBLIC.
 
   PUBLIC SECTION.
-    INTERFACES zif_qdrt_entity_metadata_prov
-      ABSTRACT METHODS
-      entity_exists
-      get_field_config
-      get_metadata
-      get_field_metadata
-      get_fields_metadata.
-
-    METHODS:
-      "! <p class="shorttext synchronized" lang="en">Initializes the metadata</p>
-      init.
-  PROTECTED SECTION.
-    CONSTANTS:
-      c_boolean_values TYPE string VALUE ' X-'.
-
-    DATA:
-      entity_type TYPE zif_qdrt_ty_global=>ty_entity_type,
-      entity_name TYPE zif_qdrt_ty_global=>ty_entity_name,
-      exists      TYPE abap_bool VALUE abap_undefined.
-
-    METHODS:
-      constructor
+    CLASS-METHODS:
+      "! <p class="shorttext synchronized" lang="en">Converts field info to field metadata</p>
+      convert_to_field_metadata
         IMPORTING
-          entity_name TYPE zif_qdrt_ty_global=>ty_entity_name
-          entity_type TYPE zif_qdrt_ty_global=>ty_entity_type,
-      read_metadata ABSTRACT,
-
-      to_field_metadata
-        IMPORTING
-          VALUE(field_info) TYPE zif_qdrt_ty_global=>ty_field_info
+          entity_name   TYPE zif_qdrt_ty_global=>ty_entity_name OPTIONAL
+          field_info    TYPE zif_qdrt_ty_global=>ty_field_info
         RETURNING
-          VALUE(result)     TYPE zif_qdrt_ty_global=>ty_field_metadata,
-
+          VALUE(result) TYPE zif_qdrt_ty_global=>ty_field_metadata,
+      "! <p class="shorttext synchronized" lang="en">Checks if given rollname has boolean like domain</p>
       is_boolean_type
         IMPORTING
           rollname      TYPE rollname
         RETURNING
           VALUE(result) TYPE abap_bool,
-
       "! <p class="shorttext synchronized" lang="en">Retrieves DFIES info of data element</p>
       get_dtel_info
         IMPORTING
           rollname      TYPE rollname
         RETURNING
           VALUE(result) TYPE dfies,
-      "! <p class="shorttext synchronized" lang="en">Retrieves object short text</p>
-      get_short_text
+      "! <p class="shorttext synchronized" lang="en">Converts shlp description to vh metadata</p>
+      convert_to_vh_metadata
         IMPORTING
-          object_type   TYPE trobjtype
-          object_name   TYPE sobj_name
+          source_tab    TYPE tabname OPTIONAL
+          source_field  TYPE fieldname OPTIONAL
+          shlp_descr    TYPE shlp_descr
         RETURNING
-          VALUE(result) TYPE string.
+          VALUE(result) TYPE zif_qdrt_ty_global=>ty_vh_metadata.
+  PROTECTED SECTION.
   PRIVATE SECTION.
+    CONSTANTS:
+      c_boolean_values TYPE string VALUE ' X-'.
 ENDCLASS.
 
 
 
-CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
+CLASS zcl_qdrt_metadata_util IMPLEMENTATION.
 
 
-  METHOD constructor.
-    me->entity_name = entity_name.
-    me->entity_type = entity_type.
-  ENDMETHOD.
-
-
-  METHOD init.
-    read_metadata( ).
-  ENDMETHOD.
-
-
-  METHOD to_field_metadata.
-    DATA:
-      fields_with_dfvh TYPE string_table.
-
+  METHOD convert_to_field_metadata.
     result = CORRESPONDING #( field_info ).
     TRANSLATE result-name TO LOWER CASE.
     result-scale = field_info-decimals.
@@ -189,8 +154,10 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
       ENDIF.
     ENDIF.
 
+    DATA(has_fix_values) = field_info-has_fix_values.
+
     IF result-type = zif_qdrt_c_edm_types=>boolean.
-      CLEAR: field_info-has_fix_values,
+      CLEAR: has_fix_values,
              result-has_value_help.
     ENDIF.
 
@@ -204,14 +171,13 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
     " handle value help type
     IF field_info-checktable IS NOT INITIAL.
       result-value_help_type = zif_qdrt_c_value_help_type=>check_table.
-    ELSEIF field_info-has_fix_values = abap_true.
+    ELSEIF has_fix_values = abap_true.
       result-value_help_type = zif_qdrt_c_value_help_type=>fix_values.
-      fields_with_dfvh = VALUE #( BASE fields_with_dfvh ( result-name ) ).
     ELSEIF result-has_value_help = abap_true.
       IF result-type = zif_qdrt_c_edm_types=>date.
         result-value_help_type = zif_qdrt_c_value_help_type=>date.
       ELSE.
-        result-value_help_type = zif_qdrt_c_value_help_type=>elementary_ddic_sh.
+        result-value_help_type = zif_qdrt_c_value_help_type=>ddic_sh.
       ENDIF.
     ENDIF.
 
@@ -260,17 +226,60 @@ CLASS zcl_qdrt_entity_metadata_base IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_short_text.
-    DATA:
-      texts TYPE TABLE OF seu_objtxt.
+  METHOD convert_to_vh_metadata.
+    FIELD-SYMBOLS:
+      <shlp_field> TYPE ddshfprop.
 
-    texts = VALUE #( ( object = object_type obj_name = object_name ) ).
+    result-value_help_name = shlp_descr-shlpname.
+    IF shlp_descr-intdescr-issimple = abap_false.
+      result-type = zif_qdrt_c_value_help_type=>collective_ddic_sh.
+    ELSE.
+      result-type = zif_qdrt_c_value_help_type=>elementary_ddic_sh.
+    ENDIF.
 
-    CALL FUNCTION 'RS_SHORTTEXT_GET'
-      TABLES
-        obj_tab = texts.
+    IF source_tab IS NOT INITIAL.
+      ASSIGN shlp_descr-interface[ valtabname = source_tab
+                                   valfield   = source_field ] TO FIELD-SYMBOL(<target_field>).
+      IF sy-subrc = 0.
+        result-token_key_field = to_lower( <target_field>-shlpfield ).
+      ENDIF.
+    ENDIF.
 
-    result = texts[ 1 ]-stext.
+    " create result table from search help field definition
+    LOOP AT shlp_descr-fieldprop ASSIGNING FIELD-SYMBOL(<sh_field_prop>) WHERE shlplispos > 0
+                                                                            OR shlpselpos > 0
+                                                                            OR shlpoutput = abap_true.
+
+      ASSIGN shlp_descr-fielddescr[ fieldname = <sh_field_prop>-fieldname ] TO FIELD-SYMBOL(<sh_field_descr>).
+
+      CHECK sy-subrc = 0.
+
+      APPEND convert_to_field_metadata(
+        field_info  = CORRESPONDING #( <sh_field_descr>
+          MAPPING has_fix_values     = valexi
+                  short_description  = scrtext_s
+                  medium_description = scrtext_m
+                  long_description   = scrtext_l
+                  field_text         = fieldtext
+                  is_lowercase       = lowercase
+                  length             = leng
+                  name               = fieldname ) ) TO result-fields.
+    ENDLOOP.
+
+    " collect output and filter fields
+    DATA(fields) = shlp_descr-fieldprop.
+    SORT fields BY shlplispos.
+
+    LOOP AT fields ASSIGNING <shlp_field> WHERE shlplispos > 0.
+      APPEND to_lower( <shlp_field>-fieldname ) TO result-output_fields.
+    ENDLOOP.
+
+    SORT fields BY shlpselpos.
+
+    LOOP AT fields ASSIGNING <shlp_field> WHERE shlpselpos > 0.
+      APPEND to_lower( <shlp_field>-fieldname ) TO result-filter_fields.
+    ENDLOOP.
+
   ENDMETHOD.
 
 ENDCLASS.

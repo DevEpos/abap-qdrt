@@ -3,9 +3,9 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_QDRT_SIMPLE_SHLP_VHDP</CLSNAME>
+    <CLSNAME>ZCL_QDRT_DDIC_SHLP_FOR_ENT_VMP</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>VH data provider for elementary search help</DESCRIPT>
+    <DESCRIPT>Metadata provider for DDIC value help at field level</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>

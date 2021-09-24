@@ -25,7 +25,7 @@ INTERFACE zif_qdrt_ty_global
     ty_filter_value         TYPE c LENGTH 132,
 
     "! <p class="shorttext synchronized" lang="en">Type of field</p>
-    ty_field_type           TYPE c LENGTH 1,
+    ty_field_type           TYPE c LENGTH 30,
 
     "! <p class="shorttext synchronized" lang="en">Source type of DDL source</p>
     ty_ddl_source_type      TYPE c LENGTH 1,
@@ -41,7 +41,6 @@ INTERFACE zif_qdrt_ty_global
     BEGIN OF ty_query_exec_settings,
       max_rows           TYPE i,
       offset             TYPE i,
-      read_metadata      TYPE abap_bool,
       determine_max_rows TYPE abap_bool,
       no_data_select     TYPE abap_bool,
     END OF ty_query_exec_settings,
@@ -97,6 +96,27 @@ INTERFACE zif_qdrt_ty_global
       fields     TYPE ty_fields_metadata,
       parameters TYPE ty_fields_metadata,
     END OF ty_entity_metadata,
+
+    "! <p class="shorttext synchronized" lang="en">Information about search help</p>
+    BEGIN OF ty_search_help_info,
+      name        TYPE shlpname,
+      description TYPE ddtext,
+    END OF ty_search_help_info,
+
+    ty_search_help_infos TYPE STANDARD TABLE OF ty_search_help_info WITH EMPTY KEY,
+
+    "! <p class="shorttext synchronized" lang="en">Value help metadata</p>
+    BEGIN OF ty_vh_metadata,
+      type            TYPE string,
+      value_help_name TYPE shlpname,
+      description     TYPE ddtext,
+      token_key_field TYPE fieldname,
+      fields          TYPE zif_qdrt_ty_global=>ty_fields_metadata,
+      filter_fields   TYPE string_table,
+      output_fields   TYPE string_table,
+    END OF ty_vh_metadata,
+
+    ty_t_vh_metadata TYPE STANDARD TABLE OF ty_vh_metadata WITH EMPTY KEY,
 
     "! <p class="shorttext synchronized" lang="en">Data for Data Preview</p>
     BEGIN OF ty_data_preview,
