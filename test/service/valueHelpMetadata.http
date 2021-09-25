@@ -5,11 +5,8 @@ X-CSRF-Token: Fetch
 
 ###
 
-# Get Collective Value help metadata for ADRDIF_CP field POST_CODE
-GET {{sap_dev_server}}/sap/zqdrtrest/entities/T/ADRDIF_CP/vhMetadata
-    ?field=POST_CODE
-    &fieldType=normal
-    &valueHelpType=DDICSearchHelp
+# Get Value help metadata for elementary vh PSTCA
+GET {{sap_dev_server}}/sap/zqdrtrest/vh/ElementaryDDICSearchHelp/PSTCA
      
 X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
 Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
@@ -17,23 +14,8 @@ Content-Type: application/json
 
 ###
 
-# Get Collective Value help metadata with a single child search help for ADRCS field COUNTY
-GET {{sap_dev_server}}/sap/zqdrtrest/entities/T/ADRCS/vhMetadata
-    ?field=COUNTY
-    &fieldType=normal
-    &valueHelpType=DDICSearchHelp
-     
-X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
-Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
-Content-Type: application/json
-
-###
-
-# Get Value help metadata for TADIR field OBJECT
-GET {{sap_dev_server}}/sap/zqdrtrest/entities/T/TADIR/vhMetadata
-    ?field=OBJECT
-    &fieldType=normal
-    &valueHelpType=DDICSearchHelp
+# Try to retrieve metadata for non existand search help
+GET {{sap_dev_server}}/sap/zqdrtrest/vh/ElementaryDDICSearchHelp/test123
      
 X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
 Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
