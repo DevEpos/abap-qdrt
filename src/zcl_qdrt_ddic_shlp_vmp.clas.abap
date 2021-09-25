@@ -37,16 +37,6 @@ CLASS zcl_qdrt_ddic_shlp_vmp IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD zif_qdrt_vh_metadata_provider~get_filter_fields.
-
-  ENDMETHOD.
-
-
-  METHOD zif_qdrt_vh_metadata_provider~get_output_fields.
-
-  ENDMETHOD.
-
-
   METHOD zif_qdrt_metadata_provider~entity_exists.
     IF exists = abap_undefined.
       SELECT SINGLE @abap_true
@@ -69,16 +59,24 @@ CLASS zcl_qdrt_ddic_shlp_vmp IMPLEMENTATION.
 
   METHOD read_metadata.
     DATA:
-      shlp_description TYPE shlp_descr.
+      shlp_descriptor TYPE shlp_descr.
     CALL FUNCTION 'F4IF_GET_SHLP_DESCR'
       EXPORTING
         shlpname = value_help_name
         shlptype = 'SH'
       IMPORTING
-        shlp     = shlp_description.
+        shlp     = shlp_descriptor.
 
-    metadata = CORRESPONDING #( zcl_qdrt_metadata_util=>convert_to_vh_metadata( shlp_descr = shlp_description ) ).
 
+    metadata = CORRESPONDING #( zcl_qdrt_metadata_util=>convert_to_vh_metadata( shlp_descr = shlp_descriptor ) ).
+
+    IF shlp_descriptor IS NOT INITIAL AND
+        shlp_descriptor-shlpname IS NOT INITIAL.
+      DATA(shlp_description) = zcl_qdrt_text_util=>get_short_text(
+        object_type = zif_qdrt_c_global=>c_tadir_types-search_help
+        object_name = CONV #( value_help_name ) ).
+      metadata-description = shlp_description.
+    ENDIF.
   ENDMETHOD.
 
 

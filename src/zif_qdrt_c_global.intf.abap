@@ -3,6 +3,11 @@ INTERFACE zif_qdrt_c_global
   PUBLIC.
 
   CONSTANTS:
+    "! <p class="shorttext synchronized" lang="en">Constants for TADIR object types</p>
+    BEGIN OF c_tadir_types,
+      search_help TYPE trobjtype VALUE 'SHLP',
+    END OF c_tadir_types,
+
     "! <p class="shorttext synchronized" lang="en">Types of fields</p>
     BEGIN OF c_field_types,
       normal_field TYPE zif_qdrt_ty_global=>ty_field_type VALUE 'normal',

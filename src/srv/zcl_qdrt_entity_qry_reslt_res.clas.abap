@@ -43,25 +43,14 @@ ENDCLASS.
 CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
 
   METHOD if_rest_resource~post.
-    DATA:
-      appl_error TYPE REF TO zcx_qdrt_appl_error.
-
     TRY.
         read_uri_params( ).
-      CATCH zcx_qdrt_appl_error INTO appl_error.
-        zcl_qdrt_rest_error_response=>create( response = mo_response )->set_body_from_exc( appl_error ).
-        RETURN.
-    ENDTRY.
-
-    parse_body( ).
-
-    TRY.
+        parse_body( ).
         execute_selection( ).
         set_response( ).
-      CATCH zcx_qdrt_appl_error INTO appl_error.
+      CATCH zcx_qdrt_appl_error INTO DATA(appl_error).
         zcl_qdrt_rest_error_response=>create( response = mo_response )->set_body_from_exc( appl_error ).
     ENDTRY.
-
   ENDMETHOD.
 
 

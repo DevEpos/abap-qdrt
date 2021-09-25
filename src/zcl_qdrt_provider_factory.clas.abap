@@ -94,7 +94,8 @@ CLASS zcl_qdrt_provider_factory IMPLEMENTATION.
   METHOD create_field_vh_metadata_prov.
     result = SWITCH #( value_help_type
 
-      WHEN zif_qdrt_c_value_help_type=>ddic_sh THEN
+      WHEN zif_qdrt_c_value_help_type=>ddic_sh OR
+           zif_qdrt_c_value_help_type=>check_table THEN
         NEW zcl_qdrt_ddic_shlp_for_ent_vmp(
           entity_name     = entity_name
           entity_type     = entity_type
@@ -150,7 +151,10 @@ CLASS zcl_qdrt_provider_factory IMPLEMENTATION.
         NEW zcl_qdrt_dom_fix_values_vhdp( rollname = value_help_name )
 
       WHEN zif_qdrt_c_value_help_type=>elementary_ddic_sh THEN
-        NEW zcl_qdrt_elementary_shlp_vhdp( value_help_name = value_help_name ) ).
+        NEW zcl_qdrt_elementary_shlp_vhdp( value_help_name = value_help_name )
+
+      WHEN zif_qdrt_c_value_help_type=>check_table THEN
+        NEW zcl_qdrt_checktable_vhdp( checktable = value_help_name ) ).
 
     IF result IS INITIAL.
       RAISE EXCEPTION TYPE zcx_qdrt_appl_error

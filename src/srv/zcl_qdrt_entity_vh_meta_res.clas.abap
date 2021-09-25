@@ -65,7 +65,7 @@ CLASS zcl_qdrt_entity_vh_meta_res IMPLEMENTATION.
       uri_attribute = c_uri_attributes-type
       value         = entity_type ).
 
-    field = to_lower( mo_request->get_uri_query_parameter(
+    field = to_upper( mo_request->get_uri_query_parameter(
       iv_name    = c_uri_attributes-field
       iv_encoded = abap_false  ) ).
     zcl_qdrt_rest_request_util=>check_empty_uri_attribute(

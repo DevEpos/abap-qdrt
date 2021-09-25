@@ -10,20 +10,6 @@
     <STATE>1</STATE>
     <UNICODE>X</UNICODE>
    </VSEOINTERF>
-   <DESCRIPTIONS>
-    <SEOCOMPOTX>
-     <CLSNAME>ZIF_QDRT_VH_METADATA_PROVIDER</CLSNAME>
-     <CMPNAME>GET_FILTER_FIELDS</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Retrieves list of filter fields</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZIF_QDRT_VH_METADATA_PROVIDER</CLSNAME>
-     <CMPNAME>GET_OUTPUT_FIELDS</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Retrieves list of output fields</DESCRIPT>
-    </SEOCOMPOTX>
-   </DESCRIPTIONS>
   </asx:values>
  </asx:abap>
 </abapGit>

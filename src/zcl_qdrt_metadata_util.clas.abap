@@ -234,7 +234,11 @@ CLASS zcl_qdrt_metadata_util IMPLEMENTATION.
     IF shlp_descr-intdescr-issimple = abap_false.
       result-type = zif_qdrt_c_value_help_type=>collective_ddic_sh.
     ELSE.
-      result-type = zif_qdrt_c_value_help_type=>elementary_ddic_sh.
+      IF shlp_descr-shlptype = 'CT'.
+        result-type = zif_qdrt_c_value_help_type=>check_table.
+      ELSE.
+        result-type = zif_qdrt_c_value_help_type=>elementary_ddic_sh.
+      ENDIF.
     ENDIF.
 
     IF source_tab IS NOT INITIAL.

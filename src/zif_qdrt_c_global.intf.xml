@@ -23,6 +23,12 @@
      <LANGU>E</LANGU>
      <DESCRIPT>Types of fields</DESCRIPT>
     </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZIF_QDRT_C_GLOBAL</CLSNAME>
+     <CMPNAME>C_TADIR_TYPES</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Constants for TADIR object types</DESCRIPT>
+    </SEOCOMPOTX>
    </DESCRIPTIONS>
   </asx:values>
  </asx:abap>

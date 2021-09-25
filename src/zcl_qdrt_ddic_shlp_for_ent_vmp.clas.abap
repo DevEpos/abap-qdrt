@@ -20,7 +20,7 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp DEFINITION
   PRIVATE SECTION.
     TYPES: BEGIN OF ty_metadata.
              INCLUDE TYPE zif_qdrt_ty_global=>ty_vh_metadata.
-    TYPES included_search_helps TYPE zif_qdrt_ty_global=>ty_t_vh_metadata.
+    TYPES included_value_helps TYPE zif_qdrt_ty_global=>ty_t_vh_metadata.
     TYPES: END OF ty_metadata.
     DATA:
       exists         TYPE abap_bool VALUE abap_undefined,
@@ -51,16 +51,6 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
     me->fieldname = fieldname.
     me->field_type = field_type.
     read_metadata( ).
-  ENDMETHOD.
-
-
-  METHOD zif_qdrt_vh_metadata_provider~get_filter_fields.
-
-  ENDMETHOD.
-
-
-  METHOD zif_qdrt_vh_metadata_provider~get_output_fields.
-
   ENDMETHOD.
 
 
@@ -138,29 +128,33 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
 
     retrieve_child_vh_info( ).
 
-    IF metadata-included_search_helps IS INITIAL.
+    IF metadata-included_value_helps IS INITIAL.
       CLEAR metadata.
       exists = abap_false.
       RETURN.
     ENDIF.
 
+    data(first_child_vh_simple) = metadata-included_value_helps[ 1 ].
+
     CALL FUNCTION 'F4IF_GET_SHLP_DESCR'
       EXPORTING
-        shlpname = metadata-included_search_helps[ 1 ]-value_help_name
+        shlpname = first_child_vh_simple-value_help_name
         shlptype = 'SH'
       IMPORTING
         shlp     = shlp_description.
 
     DATA(child_vh_metadata) = zcl_qdrt_metadata_util=>convert_to_vh_metadata( shlp_descr = shlp_description ).
+    child_vh_metadata-description = first_child_vh_simple-description.
+    child_vh_metadata-type = first_child_vh_simple-type.
 
-    IF lines( metadata-included_search_helps ) = 1.
+    IF lines( metadata-included_value_helps ) = 1.
       " only 1 child search help, so overwrite the collective with a single elementary search help
       DATA(token_key) = metadata-token_key_field.
       CLEAR metadata.
       metadata = CORRESPONDING #( child_vh_metadata ).
       metadata-token_key_field = token_key.
     ELSE.
-      metadata-included_search_helps[ 1 ] = child_vh_metadata.
+      metadata-included_value_helps[ 1 ] = CORRESPONDING #( child_vh_metadata ).
     ENDIF.
   ENDMETHOD.
 
@@ -186,9 +180,10 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
     LOOP AT child_search_helps ASSIGNING FIELD-SYMBOL(<child_shlp>).
       APPEND VALUE #(
         value_help_name = <child_shlp>-shlpname
+        type            = zif_qdrt_c_value_help_type=>elementary_ddic_sh
         description     = VALUE #( shlp_texts[
           KEY obj_name obj_name = <child_shlp>-shlpname
-                       object   = 'SHLP' ]-stext ) ) TO metadata-included_search_helps.
+                       object   = 'SHLP' ]-stext ) ) TO metadata-included_value_helps.
     ENDLOOP.
 
   ENDMETHOD.
