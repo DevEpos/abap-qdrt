@@ -24,15 +24,7 @@ CLASS zcl_qdrt_metadata_util DEFINITION
         IMPORTING
           rollname      TYPE rollname
         RETURNING
-          VALUE(result) TYPE dfies,
-      "! <p class="shorttext synchronized" lang="en">Converts shlp description to vh metadata</p>
-      convert_to_vh_metadata
-        IMPORTING
-          source_tab    TYPE tabname OPTIONAL
-          source_field  TYPE fieldname OPTIONAL
-          shlp_descr    TYPE shlp_descr
-        RETURNING
-          VALUE(result) TYPE zif_qdrt_ty_global=>ty_vh_metadata.
+          VALUE(result) TYPE dfies.
   PROTECTED SECTION.
   PRIVATE SECTION.
     CONSTANTS:
@@ -225,65 +217,5 @@ CLASS zcl_qdrt_metadata_util IMPLEMENTATION.
         OTHERS         = 3.
   ENDMETHOD.
 
-
-  METHOD convert_to_vh_metadata.
-    FIELD-SYMBOLS:
-      <shlp_field> TYPE ddshfprop.
-
-    result-value_help_name = shlp_descr-shlpname.
-    IF shlp_descr-intdescr-issimple = abap_false.
-      result-type = zif_qdrt_c_value_help_type=>collective_ddic_sh.
-    ELSE.
-      IF shlp_descr-shlptype = 'CT'.
-        result-type = zif_qdrt_c_value_help_type=>check_table.
-      ELSE.
-        result-type = zif_qdrt_c_value_help_type=>elementary_ddic_sh.
-      ENDIF.
-    ENDIF.
-
-    IF source_tab IS NOT INITIAL.
-      ASSIGN shlp_descr-interface[ valtabname = source_tab
-                                   valfield   = source_field ] TO FIELD-SYMBOL(<target_field>).
-      IF sy-subrc = 0.
-        result-token_key_field = to_lower( <target_field>-shlpfield ).
-      ENDIF.
-    ENDIF.
-
-    " create result table from search help field definition
-    LOOP AT shlp_descr-fieldprop ASSIGNING FIELD-SYMBOL(<sh_field_prop>) WHERE shlplispos > 0
-                                                                            OR shlpselpos > 0
-                                                                            OR shlpoutput = abap_true.
-
-      ASSIGN shlp_descr-fielddescr[ fieldname = <sh_field_prop>-fieldname ] TO FIELD-SYMBOL(<sh_field_descr>).
-
-      CHECK sy-subrc = 0.
-
-      APPEND convert_to_field_metadata(
-        field_info  = CORRESPONDING #( <sh_field_descr>
-          MAPPING has_fix_values     = valexi
-                  short_description  = scrtext_s
-                  medium_description = scrtext_m
-                  long_description   = scrtext_l
-                  field_text         = fieldtext
-                  is_lowercase       = lowercase
-                  length             = leng
-                  name               = fieldname ) ) TO result-fields.
-    ENDLOOP.
-
-    " collect output and filter fields
-    DATA(fields) = shlp_descr-fieldprop.
-    SORT fields BY shlplispos.
-
-    LOOP AT fields ASSIGNING <shlp_field> WHERE shlplispos > 0.
-      APPEND to_lower( <shlp_field>-fieldname ) TO result-output_fields.
-    ENDLOOP.
-
-    SORT fields BY shlpselpos.
-
-    LOOP AT fields ASSIGNING <shlp_field> WHERE shlpselpos > 0.
-      APPEND to_lower( <shlp_field>-fieldname ) TO result-filter_fields.
-    ENDLOOP.
-
-  ENDMETHOD.
 
 ENDCLASS.

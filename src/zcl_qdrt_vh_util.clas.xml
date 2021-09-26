@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_QDRT_VH_UTIL</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>Utility for value helps</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_VH_UTIL</CLSNAME>
+     <CMPNAME>ADD_ENCODED_ID_FIELD_TO_META</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Sets custom id field for vh metadata for encoded content</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_VH_UTIL</CLSNAME>
+     <CMPNAME>CONVERT_TO_VH_METADATA</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Converts shlp description to vh metadata</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_VH_UTIL</CLSNAME>
+     <CMPNAME>CREATE_RESULT_TABLE_FOR_VH</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Creates result table for value help definition</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_QDRT_VH_UTIL</CLSNAME>
+     <CMPNAME>SELECT_DATA_VIA_VH</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Selects data via value help API</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

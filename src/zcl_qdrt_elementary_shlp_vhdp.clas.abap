@@ -31,12 +31,10 @@ CLASS zcl_qdrt_elementary_shlp_vhdp IMPLEMENTATION.
 
   METHOD zif_qdrt_vh_data_provider~get_data.
     DATA:
-      search_help         TYPE shlp_descr,
-      sh_result_table     TYPE REF TO data,
-      sh_return_table     TYPE TABLE OF ddshretval,
-      sh_result_tab_comps TYPE abap_component_tab.
+      search_help TYPE shlp_descr,
+      vh_result   TYPE REF TO data.
 
-    FIELD-SYMBOLS: <sh_results> TYPE STANDARD TABLE.
+    FIELD-SYMBOLS: <vh_result> TYPE STANDARD TABLE.
 
     CALL FUNCTION 'F4IF_GET_SHLP_DESCR'
       EXPORTING
@@ -51,53 +49,20 @@ CLASS zcl_qdrt_elementary_shlp_vhdp IMPLEMENTATION.
           text = |No elementary search help for '{ value_help_name }' exists|.
     ENDIF.
 
-    " create result table from search help field definition
-    LOOP AT search_help-fieldprop ASSIGNING FIELD-SYMBOL(<sh_field_prop>) WHERE shlplispos > 0
-                                                                             OR shlpoutput = abap_true.
-      ASSIGN search_help-fielddescr[ fieldname = <sh_field_prop>-fieldname ] TO FIELD-SYMBOL(<sh_field_descr>).
-      CHECK sy-subrc = 0.
+    vh_result = zcl_qdrt_vh_util=>create_result_table_for_vh( search_help ).
+    zcl_qdrt_vh_util=>select_data_via_vh(
+      vh        = search_help
+      vh_result = vh_result ).
 
-      sh_result_tab_comps = VALUE #( BASE sh_result_tab_comps
-        ( name = <sh_field_descr>-fieldname
-          type = CAST #(
-            cl_abap_typedescr=>describe_by_name( <sh_field_descr>-rollname ) ) ) ).
+    IF vh_result IS BOUND.
+      ASSIGN vh_result->* TO <vh_result>.
 
-    ENDLOOP.
-    DATA(sh_result_structdescr) = cl_abap_structdescr=>create( p_components = sh_result_tab_comps ).
-    DATA(sh_result_tabdescr) = cl_abap_tabledescr=>create( p_line_type = sh_result_structdescr ).
-
-    CREATE DATA sh_result_table TYPE HANDLE sh_result_tabdescr.
-    ASSIGN sh_result_table->* TO <sh_results>.
-
-
-    CALL FUNCTION 'F4IF_SELECT_VALUES'
-      EXPORTING
-        shlp           = search_help
-        maxrows        = 200
-        call_shlp_exit = abap_true
-*  IMPORTING
-*       maxrows_exceeded =
-      TABLES
-        return_tab     = sh_return_table.
-    DATA(last_index) = 0.
-    LOOP AT sh_return_table ASSIGNING FIELD-SYMBOL(<sh_return_field>).
-      IF last_index <> <sh_return_field>-recordpos.
-        last_index = <sh_return_field>-recordpos.
-        APPEND INITIAL LINE TO <sh_results> ASSIGNING FIELD-SYMBOL(<sh_result_line>).
-      ENDIF.
-
-      IF <sh_result_line> IS ASSIGNED.
-        ASSIGN COMPONENT <sh_return_field>-fieldname OF STRUCTURE <sh_result_line> TO FIELD-SYMBOL(<result_field>).
-        IF sy-subrc = 0.
-          <result_field> = <sh_return_field>-fieldval.
-        ENDIF.
-      ENDIF.
-    ENDLOOP.
-
-    result = /ui2/cl_json=>serialize(
-      data        = <sh_results>
-      compress    = abap_true
-      pretty_name = /ui2/cl_json=>pretty_mode-low_case ).
+      result = /ui2/cl_json=>serialize(
+        data             = <vh_result>
+        compress         = abap_true
+        conversion_exits = abap_true
+        pretty_name      = /ui2/cl_json=>pretty_mode-low_case ).
+    ENDIF.
   ENDMETHOD.
 
 

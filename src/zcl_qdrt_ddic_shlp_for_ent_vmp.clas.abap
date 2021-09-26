@@ -91,7 +91,7 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    metadata = CORRESPONDING #( zcl_qdrt_metadata_util=>convert_to_vh_metadata(
+    metadata = CORRESPONDING #( zcl_qdrt_vh_util=>convert_to_vh_metadata(
       shlp_descr   = shlp_description
       source_tab   = shlp_tabname
       source_field = shlp_fieldname ) ).
@@ -134,7 +134,7 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
       RETURN.
     ENDIF.
 
-    data(first_child_vh_simple) = metadata-included_value_helps[ 1 ].
+    DATA(first_child_vh_simple) = metadata-included_value_helps[ 1 ].
 
     CALL FUNCTION 'F4IF_GET_SHLP_DESCR'
       EXPORTING
@@ -143,7 +143,8 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
       IMPORTING
         shlp     = shlp_description.
 
-    DATA(child_vh_metadata) = zcl_qdrt_metadata_util=>convert_to_vh_metadata( shlp_descr = shlp_description ).
+    DATA(child_vh_metadata) = zcl_qdrt_vh_util=>convert_to_vh_metadata( shlp_description ).
+
     child_vh_metadata-description = first_child_vh_simple-description.
     child_vh_metadata-type = first_child_vh_simple-type.
 
@@ -161,29 +162,31 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
 
   METHOD retrieve_child_vh_info.
     DATA:
-      child_search_helps TYPE TABLE OF ddshdescr.
+      child_vhs TYPE TABLE OF ddshdescr.
 
     CALL FUNCTION 'F4IF_TOPLEVEL_SEARCHHELPS'
       EXPORTING
         shlpname      = metadata-value_help_name
       TABLES
-        ddshdescr_tab = child_search_helps.
+        ddshdescr_tab = child_vhs.
 
-    SORT child_search_helps BY shposition.
+    SORT child_vhs BY shposition.
+    " delete collective value helps from the result
+    DELETE child_vhs WHERE dialogtype = ''.
 
     " determine the names for the search helps
-    DATA(shlp_texts) = zcl_qdrt_text_util=>get_short_texts( VALUE #(
-      FOR shlp IN child_search_helps
-      ( type = 'SHLP'
+    DATA(vh_texts) = zcl_qdrt_text_util=>get_short_texts( VALUE #(
+      FOR shlp IN child_vhs
+      ( type = zif_qdrt_c_global=>c_tadir_types-search_help
         name = shlp-shlpname ) ) ).
 
-    LOOP AT child_search_helps ASSIGNING FIELD-SYMBOL(<child_shlp>).
+    LOOP AT child_vhs ASSIGNING FIELD-SYMBOL(<child_shlp>).
       APPEND VALUE #(
         value_help_name = <child_shlp>-shlpname
         type            = zif_qdrt_c_value_help_type=>elementary_ddic_sh
-        description     = VALUE #( shlp_texts[
+        description     = VALUE #( vh_texts[
           KEY obj_name obj_name = <child_shlp>-shlpname
-                       object   = 'SHLP' ]-stext ) ) TO metadata-included_value_helps.
+                       object   = zif_qdrt_c_global=>c_tadir_types-search_help ]-stext ) ) TO metadata-included_value_helps.
     ENDLOOP.
 
   ENDMETHOD.

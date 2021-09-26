@@ -110,6 +110,8 @@ INTERFACE zif_qdrt_ty_global
       type            TYPE string,
       value_help_name TYPE shlpname,
       description     TYPE ddtext,
+      source_tab      TYPE tabname,
+      source_field    TYPE fieldname,
       token_key_field TYPE fieldname,
       fields          TYPE zif_qdrt_ty_global=>ty_fields_metadata,
       filter_fields   TYPE string_table,

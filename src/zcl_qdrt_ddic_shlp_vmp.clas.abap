@@ -67,8 +67,7 @@ CLASS zcl_qdrt_ddic_shlp_vmp IMPLEMENTATION.
       IMPORTING
         shlp     = shlp_descriptor.
 
-
-    metadata = CORRESPONDING #( zcl_qdrt_metadata_util=>convert_to_vh_metadata( shlp_descr = shlp_descriptor ) ).
+    metadata = CORRESPONDING #( zcl_qdrt_vh_util=>convert_to_vh_metadata( shlp_descriptor ) ).
 
     IF shlp_descriptor IS NOT INITIAL AND
         shlp_descriptor-shlpname IS NOT INITIAL.

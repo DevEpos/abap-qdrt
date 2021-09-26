@@ -11,10 +11,7 @@ CLASS zcl_qdrt_vh_data_res DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
     DATA:
-      BEGIN OF vh_request,
-        value_help_name TYPE shlpname,
-        type            TYPE zif_qdrt_ty_global=>ty_value_help_type,
-      END OF vh_request.
+      vh_request TYPE zif_qdrt_vh_data_provider=>ty_vh_request.
 ENDCLASS.
 
 
@@ -41,9 +38,7 @@ CLASS zcl_qdrt_vh_data_res IMPLEMENTATION.
     TRANSLATE vh_request-value_help_name TO UPPER CASE.
 
     TRY.
-        DATA(vh_provider) = zcl_qdrt_provider_factory=>create_vh_data_provider(
-          value_help_name = vh_request-value_help_name
-          value_help_type = vh_request-type ).
+        DATA(vh_provider) = zcl_qdrt_provider_factory=>create_vh_data_provider( vh_request ).
         DATA(vh_selection_result) = vh_provider->get_data( ).
         mo_response->create_entity( )->set_string_data(
           COND #( WHEN vh_selection_result IS NOT INITIAL THEN vh_selection_result ELSE '[]' ) ).

@@ -190,6 +190,8 @@ CLASS zcl_qdrt_default_fc IMPLEMENTATION.
 
 
   METHOD convert_filter_value_to_int.
+    value = cl_http_utility=>unescape_url( value ).
+
     CASE field_metadata-type.
 
       WHEN zif_qdrt_c_edm_types=>date.

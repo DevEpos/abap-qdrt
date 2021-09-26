@@ -43,8 +43,7 @@ CLASS zcl_qdrt_provider_factory DEFINITION
       "! <p class="shorttext synchronized" lang="en">Creates VH data provider</p>
       create_vh_data_provider
         IMPORTING
-          value_help_name TYPE shlpname
-          value_help_type TYPE zif_qdrt_ty_global=>ty_value_help_type
+          vh_request type zif_qdrt_vh_data_provider=>ty_vh_request
         RETURNING
           VALUE(result)   TYPE REF TO zif_qdrt_vh_data_provider
         RAISING
@@ -145,21 +144,24 @@ CLASS zcl_qdrt_provider_factory IMPLEMENTATION.
 
 
   METHOD create_vh_data_provider.
-    result = SWITCH #( value_help_type
+    result = SWITCH #( vh_request-type
 
       WHEN zif_qdrt_c_value_help_type=>fix_values THEN
-        NEW zcl_qdrt_dom_fix_values_vhdp( rollname = value_help_name )
+        NEW zcl_qdrt_dom_fix_values_vhdp( rollname = vh_request-value_help_name )
 
       WHEN zif_qdrt_c_value_help_type=>elementary_ddic_sh THEN
-        NEW zcl_qdrt_elementary_shlp_vhdp( value_help_name = value_help_name )
+        NEW zcl_qdrt_elementary_shlp_vhdp( value_help_name = vh_request-value_help_name )
 
       WHEN zif_qdrt_c_value_help_type=>check_table THEN
-        NEW zcl_qdrt_checktable_vhdp( checktable = value_help_name ) ).
+        NEW zcl_qdrt_checktable_vhdp(
+          source_tab   = vh_request-source_tab
+          source_field = vh_request-source_field
+          checktable   = vh_request-value_help_name ) ).
 
     IF result IS INITIAL.
       RAISE EXCEPTION TYPE zcx_qdrt_appl_error
         EXPORTING
-          text = |Value Help Type { value_help_type } is not supported|.
+          text = |Value Help Type { vh_request-type } is not supported|.
     ENDIF.
   ENDMETHOD.
 
