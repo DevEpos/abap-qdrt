@@ -6,8 +6,9 @@ CLASS zcl_qdrt_entities_res DEFINITION
   INHERITING FROM cl_rest_resource.
 
   PUBLIC SECTION.
-    METHODS if_rest_resource~get
-        REDEFINITION.
+    METHODS:
+      constructor,
+      if_rest_resource~get REDEFINITION.
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES:
@@ -25,7 +26,9 @@ CLASS zcl_qdrt_entities_res DEFINITION
     TYPES: END OF ty_entity_extended.
 
     DATA:
-      filter_ranges             TYPE RANGE OF tabname,
+      sql_to_upper_in_regex     TYPE string,
+      name_filter_range         TYPE RANGE OF tabname,
+      descr_filter_range        TYPE RANGE OF ddtext,
       max_rows                  TYPE i,
       extended_search_result    TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY,
       entity_type_range         TYPE RANGE OF zif_qdrt_ty_global=>ty_entity_type,
@@ -43,22 +46,21 @@ ENDCLASS.
 CLASS zcl_qdrt_entities_res IMPLEMENTATION.
 
 
-  METHOD if_rest_resource~get.
-    DATA:
-      filter_ranges TYPE RANGE OF tabname,
-      param         TYPE string,
-      skip          TYPE i,
-      top           TYPE i.
+  METHOD constructor.
+    super->constructor( ).
+    IF sy-saprl >= 751.
+      sql_to_upper_in_regex = |UPPER( &1 )|.
+    ELSE.
+      sql_to_upper_in_regex = |&1|.
+    ENDIF.
+  ENDMETHOD.
 
-    TRY.
-        read_uri_params( ).
-        select_data( ).
-        filter_cds_views( ).
-        set_response( ).
-      CATCH cx_root INTO DATA(error).
-        mo_response->set_status( cl_rest_status_code=>gc_client_error_bad_request ).
-        mo_response->set_reason( error->get_text( ) ).
-    ENDTRY.
+
+  METHOD if_rest_resource~get.
+    read_uri_params( ).
+    select_data( ).
+    filter_cds_views( ).
+    set_response( ).
   ENDMETHOD.
 
 
@@ -69,11 +71,21 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
       max_rows = 200.
     ENDIF.
 
-    DATA(filter) = mo_request->get_uri_query_parameter( iv_name = '$filter' iv_encoded = abap_false ).
-    IF filter IS NOT INITIAL.
-      filter_ranges = VALUE #( ( sign   = 'I'
-                                 option = COND #( WHEN filter CA '*+' THEN 'CP' ELSE 'EQ' )
-                                 low    = to_upper( filter ) ) ).
+    DATA(name_filter) = mo_request->get_uri_query_parameter( iv_name = 'name' iv_encoded = abap_false ).
+    IF name_filter IS NOT INITIAL.
+      name_filter_range = VALUE #( ( sign   = 'I'
+                                     option = COND #( WHEN name_filter CA '*+' THEN 'CP' ELSE 'EQ' )
+                                     low    = to_upper( name_filter ) ) ).
+    ENDIF.
+
+    DATA(descr_filter) = mo_request->get_uri_query_parameter( iv_name = 'description' iv_encoded = abap_false ).
+    IF descr_filter IS NOT INITIAL.
+      IF sy-saprl >= 751.
+        TRANSLATE descr_filter TO UPPER CASE.
+      ENDIF.
+      descr_filter_range = VALUE #( ( sign   = 'I'
+                                      option = COND #( WHEN descr_filter CA '*+' THEN 'CP' ELSE 'EQ' )
+                                      low    = descr_filter ) ).
     ENDIF.
 
     DATA(entity_type) = to_upper( mo_request->get_uri_query_parameter( iv_name = 'entityType' ) ).
@@ -89,6 +101,10 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
 
 
   METHOD select_data.
+
+    DATA(description_dyn_where) = replace( val = sql_to_upper_in_regex sub = '&1' with = 'entity~description' ) &&
+                                  | IN @descr_filter_range|.
+
     SELECT type,
            rawentityid AS name,
            altentityid AS alt_name,
@@ -99,9 +115,10 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
         LEFT OUTER JOIN zqdrt_i_dbentityfavorite AS fav
           ON  entity~entityid = fav~entityid
           AND entity~type     = fav~entitytype
-      WHERE entity~entityid IN @filter_ranges
+      WHERE entity~entityid IN @name_filter_range
         AND type IN @entity_type_range
         AND fav~isfavorite IN @entity_search_scope_range
+        AND (description_dyn_where)
       ORDER BY type,
                entity~entityid
       INTO CORRESPONDING FIELDS OF TABLE @extended_search_result
