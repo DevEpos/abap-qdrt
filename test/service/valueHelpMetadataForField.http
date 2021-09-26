@@ -38,3 +38,15 @@ GET {{sap_dev_server}}/sap/zqdrtrest/entities/T/TADIR/vhMetadata
 X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
 Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
 Content-Type: application/json
+
+###
+
+# Get Value help metadata for SEOCLASSEX field REFCLSNAME
+GET {{sap_dev_server}}/sap/zqdrtrest/entities/T/SEOCLASSEX/vhMetadata
+    ?field=REFCLSNAME
+    &fieldType=normal
+    &valueHelpType=CheckTable
+     
+X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+Content-Type: application/json
