@@ -16,7 +16,7 @@ X-CSRF-Token: Fetch
 ###
 
 # Get Value help data for TADIR field GENFLAG (i.e. Fix values)
-POST {{sap_dev_server}}/sap/zqdrtrest/valuehelpdata?sap-language=DE HTTP/1.1
+POST {{sap_dev_server}}/sap/zqdrtrest/valueHelpData?sap-language=DE HTTP/1.1
 X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
 Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
 Content-Type: application/json
@@ -32,7 +32,7 @@ Content-Type: application/json
 ###
 
 # Non existant Domain
-POST {{sap_dev_server}}/sap/zqdrtrest/valuehelpdata HTTP/1.1
+POST {{sap_dev_server}}/sap/zqdrtrest/valueHelpData HTTP/1.1
 X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
 Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
 Content-Type: application/json
@@ -46,7 +46,7 @@ Content-Type: application/json
 ###
 
 # Get data for Elementary search help USER_ADDR
-POST {{sap_dev_server}}/sap/zqdrtrest/valuehelpdata HTTP/1.1
+POST {{sap_dev_server}}/sap/zqdrtrest/valueHelpData HTTP/1.1
 X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
 Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
 Content-Type: application/json
@@ -60,7 +60,7 @@ Content-Type: application/json
 ###
 
 # Non existant Elementary Search help TEST1
-POST {{sap_dev_server}}/sap/zqdrtrest/valuehelpdata HTTP/1.1
+POST {{sap_dev_server}}/sap/zqdrtrest/valueHelpData HTTP/1.1
 X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
 Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
 Content-Type: application/json
@@ -69,4 +69,20 @@ Content-Type: application/json
     "valueHelpName": "Test1",
     "type": "ElementaryDDICSearchHelp",
     "maxRows": 500
+}
+
+###
+
+# Retrieve data for checktable value help at SEOCLASSEX-REFCLSNAME
+POST {{sap_dev_server}}/sap/zqdrtrest/valueHelpData?sap-language=EN
+X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+Content-Type: application/json
+
+{
+    "valueHelpName": "T005S",
+    "type": "CheckTable",
+    "sourceTab": "SEOCLASSEX",
+    "sourceField": "REFCLSNAME",
+    "maxRows": 10
 }
