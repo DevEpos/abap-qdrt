@@ -141,9 +141,21 @@ CLASS zcl_qdrt_vh_util IMPLEMENTATION.
 
     ASSIGN vh_result->* TO <vh_result>.
 
+    DATA(l_vh) = vh.
+    " clear any conversion exits from field definitions so the internal format is returned
+    LOOP AT l_vh-fielddescr ASSIGNING FIELD-SYMBOL(<field_descriptor>) WHERE convexit IS NOT INITIAL.
+      CLEAR: <field_descriptor>-convexit.
+    ENDLOOP.
+
+    " F4IF_SELECT_VALUES only returns values in fields that are marked as 'exporting' but
+    "  we expect also values in the fields that are marked as list fields
+    LOOP AT l_vh-fieldprop ASSIGNING FIELD-SYMBOL(<field_prop>) WHERE shlplispos > 0.
+      <field_prop>-shlpoutput = abap_true.
+    ENDLOOP.
+
     CALL FUNCTION 'F4IF_SELECT_VALUES'
       EXPORTING
-        shlp           = vh
+        shlp           = l_vh
         maxrows        = max_rows
         call_shlp_exit = abap_true
 *  IMPORTING
