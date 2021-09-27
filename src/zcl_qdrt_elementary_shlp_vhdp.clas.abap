@@ -57,11 +57,11 @@ CLASS zcl_qdrt_elementary_shlp_vhdp IMPLEMENTATION.
     IF vh_result IS BOUND.
       ASSIGN vh_result->* TO <vh_result>.
 
-      result = /ui2/cl_json=>serialize(
+      result = zcl_qdrt_json=>to_json(
         data             = <vh_result>
         compress         = abap_true
         conversion_exits = abap_true
-        pretty_name      = /ui2/cl_json=>pretty_mode-low_case ).
+        pretty_name      = zcl_qdrt_json=>pretty_mode-low_case ).
     ENDIF.
   ENDMETHOD.
 

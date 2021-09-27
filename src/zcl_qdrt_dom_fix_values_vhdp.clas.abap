@@ -62,10 +62,10 @@ CLASS zcl_qdrt_dom_fix_values_vhdp IMPLEMENTATION.
       APPEND VALUE #( fix_value = <fix_value>-low description = <fix_value>-ddtext ) TO fix_values_results.
     ENDLOOP.
 
-    result = /ui2/cl_json=>serialize(
+    result = zcl_qdrt_json=>to_json(
       data        = fix_values_results
       compress    = abap_false " empty values are possible
-      pretty_name = /ui2/cl_json=>pretty_mode-camel_case ).
+      pretty_name = zcl_qdrt_json=>pretty_mode-camel_case ).
   ENDMETHOD.
 
 

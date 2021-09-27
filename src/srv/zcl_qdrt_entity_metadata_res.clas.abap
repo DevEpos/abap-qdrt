@@ -40,10 +40,10 @@ CLASS zcl_qdrt_entity_metadata_res IMPLEMENTATION.
     DATA(response_body) = entity_metadata->get_metadata( ).
     IF response_body IS NOT INITIAL.
       mo_response->set_status( cl_rest_status_code=>gc_success_ok ).
-      DATA(json) = /ui2/cl_json=>serialize(
+      DATA(json) = zcl_qdrt_json=>to_json(
         data             = response_body
         compress         = abap_true
-        pretty_name      = /ui2/cl_json=>pretty_mode-camel_case
+        pretty_name      = zcl_qdrt_json=>pretty_mode-camel_case
         name_mappings    = VALUE #(
           ( abap = 'unit_field' json = 'sap:unit' )
           ( abap = 'semantics'  json = 'sap:semantics' ) ) ).

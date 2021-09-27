@@ -164,9 +164,9 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
       DATA(response_entity) = mo_response->create_entity( ).
 
       response_entity->set_content_type( if_rest_media_type=>gc_appl_json ).
-      DATA(json_str) = /ui2/cl_json=>serialize(
+      DATA(json_str) = zcl_qdrt_json=>to_json(
         data        = search_result
-        pretty_name = /ui2/cl_json=>pretty_mode-camel_case ).
+        pretty_name = zcl_qdrt_json=>pretty_mode-camel_case ).
       response_entity->set_string_data( json_str ).
       mo_response->set_status( 200 ).
     ELSE.

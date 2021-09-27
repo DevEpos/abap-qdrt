@@ -57,10 +57,10 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
   METHOD parse_body.
     DATA(json_body) = mo_request->get_entity( )->get_string_data( ).
     IF json_body IS NOT INITIAL.
-      /ui2/cl_json=>deserialize(
+      zcl_qdrt_json=>to_abap(
         EXPORTING
           json        = json_body
-          pretty_name = /ui2/cl_json=>pretty_mode-camel_case
+          pretty_name = zcl_qdrt_json=>pretty_mode-camel_case
         CHANGING
           data        = query_config ).
     ENDIF.
@@ -106,17 +106,17 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
 
   METHOD set_response.
     FIELD-SYMBOLS: <result_rows> TYPE ANY TABLE.
-    DATA(json) = /ui2/cl_json=>serialize(
+    DATA(json) = zcl_qdrt_json=>to_json(
       data             = query_result
 *     compress         = abap_true
-      pretty_name      = /ui2/cl_json=>pretty_mode-low_case
+      pretty_name      = zcl_qdrt_json=>pretty_mode-low_case
       " TODO: make setting available
       conversion_exits = abap_true
       name_mappings    = VALUE #(
            ( abap = 'max_rows' json = 'maxRows' ) ) ).
 
     " Replace any lonly '\r' characters
-    DATA(xjson) = /ui2/cl_json=>string_to_raw( json ).
+    DATA(xjson) = zcl_qdrt_json=>string_to_raw( json ).
     DATA: cr_byte    TYPE x VALUE '0D', " CR character
           space_byte TYPE x VALUE '20'. " Space character
     REPLACE ALL OCCURRENCES OF cr_byte IN xjson WITH space_byte IN BYTE MODE.

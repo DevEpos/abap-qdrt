@@ -22,10 +22,10 @@ CLASS zcl_qdrt_vh_data_res IMPLEMENTATION.
   METHOD if_rest_resource~post.
     DATA(json_body) = mo_request->get_entity( )->get_string_data( ).
     IF json_body IS NOT INITIAL.
-      /ui2/cl_json=>deserialize(
+      zcl_qdrt_json=>to_abap(
         EXPORTING
           json        = json_body
-          pretty_name = /ui2/cl_json=>pretty_mode-camel_case
+          pretty_name = zcl_qdrt_json=>pretty_mode-camel_case
         CHANGING
           data        = vh_request ).
     ENDIF.

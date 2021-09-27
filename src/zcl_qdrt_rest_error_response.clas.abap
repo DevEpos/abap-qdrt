@@ -55,9 +55,9 @@ CLASS zcl_qdrt_rest_error_response IMPLEMENTATION.
 
   METHOD set_body_from_text.
     response->create_entity( )->set_string_data(
-      /ui2/cl_json=>serialize(
+      zcl_qdrt_json=>serialize(
         data        = VALUE ty_error_msg( message = text )
-        pretty_name = /ui2/cl_json=>pretty_mode-camel_case
+        pretty_name = zcl_qdrt_json=>pretty_mode-camel_case
         compress    = abap_true ) ).
 
     result = me.
@@ -79,9 +79,9 @@ CLASS zcl_qdrt_rest_error_response IMPLEMENTATION.
     response_message-callstack = error->callstack.
 
     response->create_entity( )->set_string_data(
-      /ui2/cl_json=>serialize(
+      zcl_qdrt_json=>to_json(
         data        = response_message
-        pretty_name = /ui2/cl_json=>pretty_mode-camel_case
+        pretty_name = zcl_qdrt_json=>pretty_mode-camel_case
         compress    = abap_true ) ).
 
     result = me.

@@ -98,10 +98,10 @@ CLASS zcl_qdrt_entity_vh_meta_res IMPLEMENTATION.
 
     DATA(metadata) = vh_metadata_provider->get_metadata( ).
     mo_response->create_entity( )->set_string_data(
-      /ui2/cl_json=>serialize(
+      zcl_qdrt_json=>to_json(
         data        = metadata
         compress    = abap_true
-        pretty_name = /ui2/cl_json=>pretty_mode-camel_case ) ).
+        pretty_name = zcl_qdrt_json=>pretty_mode-camel_case ) ).
   ENDMETHOD.
 
 ENDCLASS.
