@@ -148,7 +148,9 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
     child_vh_metadata-description = first_child_vh_simple-description.
     child_vh_metadata-type = first_child_vh_simple-type.
 
-    IF lines( metadata-included_value_helps ) = 1.
+    IF metadata-included_value_helps IS INITIAL.
+      CLEAR metadata.
+    ELSEIF lines( metadata-included_value_helps ) = 1.
       " only 1 child search help, so overwrite the collective with a single elementary search help
       DATA(token_key) = metadata-token_key_field.
       CLEAR metadata.
@@ -171,8 +173,22 @@ CLASS zcl_qdrt_ddic_shlp_for_ent_vmp IMPLEMENTATION.
         ddshdescr_tab = child_vhs.
 
     SORT child_vhs BY shposition.
-    " delete collective value helps from the result
-    DELETE child_vhs WHERE dialogtype = ''.
+    " delete collective value helps and value helps with certain Fn exits from the result
+    DELETE child_vhs WHERE dialogtype = ''
+                        OR selmexit = 'ESH_F4_HELP_EXIT'
+                        OR selmexit = 'COM_SE_F4_HELP_EXIT'.
+
+    " Delete all child value helps without any output fields, i.e. shlplispos = 0
+    SELECT DISTINCT shlpname
+      FROM dd32s
+      FOR ALL ENTRIES IN @child_vhs
+      WHERE shlpname = @child_vhs-shlpname
+        AND shlplispos > 0
+      INTO CORRESPONDING FIELDS OF TABLE @child_vhs.
+
+    IF child_vhs IS INITIAL.
+      RETURN.
+    ENDIF.
 
     " determine the names for the search helps
     DATA(vh_texts) = zcl_qdrt_text_util=>get_short_texts( VALUE #(
