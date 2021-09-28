@@ -166,8 +166,11 @@ CLASS zcl_qdrt_metadata_util IMPLEMENTATION.
     ELSEIF has_fix_values = abap_true.
       result-value_help_type = zif_qdrt_c_value_help_type=>fix_values.
     ELSEIF result-has_value_help = abap_true.
-      IF result-type = zif_qdrt_c_edm_types=>date.
-        result-value_help_type = zif_qdrt_c_value_help_type=>date.
+      IF result-type = zif_qdrt_c_edm_types=>date OR
+          result-type = zif_qdrt_c_edm_types=>time OR
+          result-type = zif_qdrt_c_edm_types=>date_time OR
+          result-type = zif_qdrt_c_edm_types=>date_time_offset.
+        CLEAR result-has_value_help.
       ELSE.
         result-value_help_type = zif_qdrt_c_value_help_type=>ddic_sh.
       ENDIF.

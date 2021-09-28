@@ -5,7 +5,6 @@ INTERFACE zif_qdrt_c_value_help_type
   CONSTANTS:
     check_table        TYPE string VALUE 'CheckTable',
     fix_values         TYPE string VALUE 'DomainFixValues',
-    date               TYPE string VALUE 'Date',
     ddic_sh            TYPE string VALUE 'DDICSearchHelp',
     elementary_ddic_sh TYPE string VALUE 'ElementaryDDICSearchHelp',
     collective_ddic_sh TYPE string VALUE 'CollectiveDDICSearchHelp'.
