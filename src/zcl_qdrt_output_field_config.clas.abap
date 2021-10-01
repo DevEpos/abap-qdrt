@@ -59,7 +59,7 @@ CLASS zcl_qdrt_output_field_config IMPLEMENTATION.
         IF <result_line> IS ASSIGNED.
           <result_line> = |{ <result_line> }, |.
         ENDIF.
-        result = VALUE #( BASE result ( |COUNT( * ) AS { zif_qdrt_c_global=>c_custom_field_names-line_index }| ) ).
+        result = VALUE #( BASE result ( |COUNT( * ) AS { zif_qdrt_c_global=>c_special_field_names-group_count }| ) ).
       ENDIF.
     ENDIF.
   ENDMETHOD.

@@ -15,10 +15,9 @@ INTERFACE zif_qdrt_c_global
     END OF c_field_types,
 
     "! <p class="shorttext synchronized" lang="en">Constants for custom fieldnames</p>
-    BEGIN OF c_custom_field_names,
+    BEGIN OF c_special_field_names,
       "! Field used during GROUP BY select to collect aggregation count
-      line_index              TYPE fieldname VALUE 'LINE_INDEX',
-      encoded_token_key_field TYPE fieldname VALUE '__ID',
-    END OF c_custom_field_names.
+      group_count TYPE fieldname VALUE '_GROUP_COUNT',
+    END OF c_special_field_names.
 
 ENDINTERFACE.

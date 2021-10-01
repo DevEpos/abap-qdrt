@@ -132,7 +132,7 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
 
     IF aggregation_config->is_empty( ) = abap_false.
       tab_components = VALUE #( BASE tab_components
-       ( name = zif_qdrt_c_global=>c_custom_field_names-line_index
+       ( name = zif_qdrt_c_global=>c_special_field_names-group_count
          type = CAST #( cl_abap_typedescr=>describe_by_data( VALUE zqdrt_no_of_lines( ) ) ) ) ).
     ENDIF.
 
