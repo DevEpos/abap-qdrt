@@ -24,7 +24,6 @@ CLASS zcl_qdrt_entity_qry_reslt_res DEFINITION
       BEGIN OF query_result,
         rows     TYPE REF TO data,
         max_rows TYPE zqdrt_no_of_lines,
-        metadata TYPE REF TO data,
       END OF query_result,
       data_provider TYPE REF TO zcl_qdrt_entity_data_provider.
 
@@ -113,7 +112,8 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
       " TODO: make setting available
       conversion_exits = abap_true
       name_mappings    = VALUE #(
-           ( abap = 'max_rows' json = 'maxRows' ) ) ).
+        ( abap = 'max_rows' json = 'maxRows' )
+        ( abap = '_group_count' json = '$groupCount' ) ) ).
 
     " Replace any lonly '\r' characters
     DATA(xjson) = zcl_qdrt_json=>string_to_raw( json ).
