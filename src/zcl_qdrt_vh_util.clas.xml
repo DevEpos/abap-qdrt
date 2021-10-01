@@ -14,12 +14,6 @@
    <DESCRIPTIONS>
     <SEOCOMPOTX>
      <CLSNAME>ZCL_QDRT_VH_UTIL</CLSNAME>
-     <CMPNAME>ADD_ENCODED_ID_FIELD_TO_META</CMPNAME>
-     <LANGU>E</LANGU>
-     <DESCRIPT>Sets custom id field for vh metadata for encoded content</DESCRIPT>
-    </SEOCOMPOTX>
-    <SEOCOMPOTX>
-     <CLSNAME>ZCL_QDRT_VH_UTIL</CLSNAME>
      <CMPNAME>CONVERT_TO_VH_METADATA</CMPNAME>
      <LANGU>E</LANGU>
      <DESCRIPT>Converts shlp description to vh metadata</DESCRIPT>

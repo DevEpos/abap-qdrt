@@ -25,12 +25,7 @@ CLASS zcl_qdrt_vh_util DEFINITION
         IMPORTING
           max_rows  TYPE i DEFAULT 200
           vh        TYPE shlp_descr
-          vh_result TYPE REF TO data,
-      "! <p class="shorttext synchronized" lang="en">Sets custom id field for vh metadata for encoded content</p>
-      "! SAPUI5 expects the content of the key column to be encoded at some places
-      add_encoded_id_field_to_meta
-        CHANGING
-          vh_meta TYPE zif_qdrt_ty_global=>ty_vh_metadata.
+          vh_result TYPE REF TO data.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -133,7 +128,10 @@ CLASS zcl_qdrt_vh_util IMPLEMENTATION.
 
   METHOD select_data_via_vh.
     DATA: vh_return TYPE TABLE OF ddshretval.
-    FIELD-SYMBOLS: <vh_result> TYPE STANDARD TABLE.
+
+    FIELD-SYMBOLS:
+      <vh_result>  TYPE STANDARD TABLE,
+      <field_prop> TYPE ddshfprop.
 
     CHECK:
       vh_result IS BOUND,
@@ -149,8 +147,19 @@ CLASS zcl_qdrt_vh_util IMPLEMENTATION.
 
     " F4IF_SELECT_VALUES only returns values in fields that are marked as 'exporting' but
     "  we expect also values in the fields that are marked as list fields
-    LOOP AT l_vh-fieldprop ASSIGNING FIELD-SYMBOL(<field_prop>) WHERE shlplispos > 0.
+    LOOP AT l_vh-fieldprop ASSIGNING <field_prop> WHERE shlplispos > 0.
       <field_prop>-shlpoutput = abap_true.
+    ENDLOOP.
+
+    " Set default values for filter fields that are not visible
+    LOOP AT l_vh-fieldprop ASSIGNING <field_prop> WHERE defaultval IS NOT INITIAL
+                                                    and shlpselpos = 0.
+      CHECK NOT line_exists( l_vh-selopt[ shlpfield = <field_prop>-fieldname ] ).
+      APPEND VALUE #(
+        shlpfield = <field_prop>-fieldname
+        sign      = 'I'
+        option    = 'EQ'
+        low       = replace( val = <field_prop>-defaultval sub = '''' with = '' occ = 0 ) ) TO l_vh-selopt.
     ENDLOOP.
 
     CALL FUNCTION 'F4IF_SELECT_VALUES'
@@ -180,15 +189,5 @@ CLASS zcl_qdrt_vh_util IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-
-  METHOD add_encoded_id_field_to_meta.
-    ASSIGN vh_meta-fields[ name = vh_meta-token_key_field ] TO FIELD-SYMBOL(<token_key_field>).
-    IF sy-subrc = 0 AND <token_key_field>-type = zif_qdrt_c_edm_types=>string.
-      vh_meta-token_key_field = to_lower( zif_qdrt_c_global=>c_custom_field_names-encoded_token_key_field ).
-      INSERT VALUE #(
-        name = vh_meta-token_key_field
-        type = zif_qdrt_c_edm_types=>string ) INTO vh_meta-fields INDEX 1.
-    ENDIF.
-  ENDMETHOD.
 
 ENDCLASS.
