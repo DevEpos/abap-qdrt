@@ -30,6 +30,7 @@ CLASS zcl_qdrt_entities_res DEFINITION
       name_filter_range         TYPE RANGE OF tabname,
       descr_filter_range        TYPE RANGE OF ddtext,
       max_rows                  TYPE i,
+      offset                 TYPE i,
       extended_search_result    TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY,
       entity_type_range         TYPE RANGE OF zif_qdrt_ty_global=>ty_entity_type,
       entity_search_scope_range TYPE RANGE OF abap_bool.
@@ -70,6 +71,9 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
     IF max_rows IS INITIAL.
       max_rows = 200.
     ENDIF.
+
+    DATA(skip_param) = mo_request->get_uri_query_parameter( iv_name = '$skip' iv_encoded = abap_false ).
+    offset = CONV i( skip_param ).
 
     DATA(name_filter) = mo_request->get_uri_query_parameter( iv_name = 'name' iv_encoded = abap_false ).
     IF name_filter IS NOT INITIAL.
@@ -122,7 +126,8 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
       ORDER BY type,
                entity~entityid
       INTO CORRESPONDING FIELDS OF TABLE @extended_search_result
-      UP TO @max_rows ROWS.
+      UP TO @max_rows ROWS
+      OFFSET @offset.
   ENDMETHOD.
 
 
