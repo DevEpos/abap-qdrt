@@ -1,0 +1,32 @@
+# @name  csrf_fetch
+HEAD {{sap_dev_server}}/sap/zqdrtrest/?sap-language=EN HTTP/1.1
+X-CSRF-Token: Fetch
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+
+###
+
+# Retrieve entities without filter
+GET {{sap_dev_server}}/sap/zqdrtrest/entities HTTP/1.1
+X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+Content-Type: application/json
+
+###
+
+# Retrieve entities with filter
+GET {{sap_dev_server}}/sap/zqdrtrest/entities
+    ?name=DD0*
+X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+Content-Type: application/json
+
+###
+
+# Retrieve entities with offset and max rows params
+GET {{sap_dev_server}}/sap/zqdrtrest/entities
+    ?$top=60
+    &$skip=20
+    &name=DD0*
+X-CSRF-Token: {{csrf_fetch.response.headers.x-csrf-Token}}
+Authorization: Basic {{sap_dev_user}} {{sap_dev_pwd}}
+Content-Type: application/json
