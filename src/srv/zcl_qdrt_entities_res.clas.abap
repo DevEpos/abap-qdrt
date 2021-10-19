@@ -77,7 +77,7 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
     DATA(top_param) = mo_request->get_uri_query_parameter( iv_name = '$top' iv_encoded = abap_false ).
     max_rows = CONV i( top_param ).
     IF max_rows IS INITIAL.
-      max_rows = 200.
+      max_rows = 50.
     ENDIF.
 
     DATA(skip_param) = mo_request->get_uri_query_parameter( iv_name = '$skip' iv_encoded = abap_false ).
@@ -191,16 +191,11 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
 
     DATA(json_str) = zcl_qdrt_json=>to_json(
       data        = search_result
+
       pretty_name = zcl_qdrt_json=>pretty_mode-camel_case ).
 
     response_entity->set_string_data( json_str ).
-
-*    IF extended_search_results IS NOT INITIAL.
-*      mo_response->set_status( 200 ).
-*    ELSE.
-*      mo_response->set_status( 204 ).
-*    ENDIF.
-
+    mo_response->set_status( cl_rest_status_code=>gc_success_accepted ).
   ENDMETHOD.
 
 ENDCLASS.
