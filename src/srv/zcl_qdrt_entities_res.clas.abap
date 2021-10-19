@@ -25,13 +25,21 @@ CLASS zcl_qdrt_entities_res DEFINITION
     TYPES alt_name TYPE ddlname.
     TYPES: END OF ty_entity_extended.
 
+    TYPES:
+      BEGIN OF ty_search_result,
+        results TYPE STANDARD TABLE OF ty_entity WITH EMPTY KEY,
+        count   TYPE i,
+      END OF ty_search_result.
+
     DATA:
       sql_to_upper_in_regex     TYPE string,
+      determine_max_rows        TYPE abap_bool,
       name_filter_range         TYPE RANGE OF tabname,
       descr_filter_range        TYPE RANGE OF ddtext,
       max_rows                  TYPE i,
-      offset                 TYPE i,
-      extended_search_result    TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY,
+      offset                    TYPE i,
+      search_result             TYPE ty_search_result,
+      extended_search_results   TYPE STANDARD TABLE OF ty_entity_extended WITH EMPTY KEY,
       entity_type_range         TYPE RANGE OF zif_qdrt_ty_global=>ty_entity_type,
       entity_search_scope_range TYPE RANGE OF abap_bool.
 
@@ -101,6 +109,8 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
     IF search_scope = 'favorites'.
       entity_search_scope_range = VALUE #( ( sign = 'I' option = 'EQ' low = abap_true ) ).
     ENDIF.
+
+    determine_max_rows = xsdbool( mo_request->get_uri_query_parameter( iv_name = '$count' iv_encoded = abap_false  ) = 'true' ).
   ENDMETHOD.
 
 
@@ -123,11 +133,24 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
         AND type IN @entity_type_range
         AND fav~isfavorite IN @entity_search_scope_range
         AND (description_dyn_where)
-      ORDER BY type,
-               entity~entityid
-      INTO CORRESPONDING FIELDS OF TABLE @extended_search_result
+      ORDER BY entity~entityid,
+               type
+      INTO CORRESPONDING FIELDS OF TABLE @extended_search_results
       UP TO @max_rows ROWS
       OFFSET @offset.
+
+    IF determine_max_rows = abap_true.
+      SELECT COUNT( * )
+        FROM zqdrt_i_dbentity AS entity
+          LEFT OUTER JOIN zqdrt_i_dbentityfavorite AS fav
+            ON  entity~entityid = fav~entityid
+            AND entity~type     = fav~entitytype
+        WHERE entity~entityid IN @name_filter_range
+          AND type IN @entity_type_range
+          AND fav~isfavorite IN @entity_search_scope_range
+          AND (description_dyn_where)
+        INTO @search_result-count.
+    ENDIF.
   ENDMETHOD.
 
 
@@ -136,22 +159,22 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
        ddl_sources TYPE HASHED TABLE OF zif_qdrt_ty_global=>ty_ddl_source WITH UNIQUE KEY ddlname.
 
     CHECK: sy-saprl >= 751,
-           line_exists( extended_search_result[ type = zif_qdrt_c_entity_types=>cds_view ] ).
+           line_exists( extended_search_results[ type = zif_qdrt_c_entity_types=>cds_view ] ).
 
     DATA(proj_fields) = `ddlname, source_type`.
 
     SELECT (proj_fields)
       FROM ddddlsrc
-      FOR ALL ENTRIES IN @extended_search_result
-      WHERE ddlname = @extended_search_result-alt_name
+      FOR ALL ENTRIES IN @extended_search_results
+      WHERE ddlname = @extended_search_results-alt_name
       INTO CORRESPONDING FIELDS OF TABLE @ddl_sources.
 
     IF sy-subrc = 0.
-      LOOP AT extended_search_result ASSIGNING FIELD-SYMBOL(<entity>) WHERE type = zif_qdrt_c_entity_types=>cds_view.
+      LOOP AT extended_search_results ASSIGNING FIELD-SYMBOL(<entity>) WHERE type = zif_qdrt_c_entity_types=>cds_view.
         ASSIGN ddl_sources[ ddlname = <entity>-alt_name ] TO FIELD-SYMBOL(<ddl_source>).
 
         IF <ddl_source>-source_type NOT IN zcl_qdrt_cds_util=>valid_ddl_source_types.
-          DELETE extended_search_result.
+          DELETE extended_search_results.
         ENDIF.
       ENDLOOP.
 
@@ -161,22 +184,23 @@ CLASS zcl_qdrt_entities_res IMPLEMENTATION.
 
 
   METHOD set_response.
-    DATA:
-      search_result TYPE TABLE OF ty_entity.
 
-    IF extended_search_result IS NOT INITIAL.
-      search_result = CORRESPONDING #( extended_search_result ).
-      DATA(response_entity) = mo_response->create_entity( ).
+    DATA(response_entity) = mo_response->create_entity( ).
+    response_entity->set_content_type( if_rest_media_type=>gc_appl_json ).
+    search_result-results = CORRESPONDING #( extended_search_results ).
 
-      response_entity->set_content_type( if_rest_media_type=>gc_appl_json ).
-      DATA(json_str) = zcl_qdrt_json=>to_json(
-        data        = search_result
-        pretty_name = zcl_qdrt_json=>pretty_mode-camel_case ).
-      response_entity->set_string_data( json_str ).
-      mo_response->set_status( 200 ).
-    ELSE.
-      mo_response->set_status( 204 ).
-    ENDIF.
+    DATA(json_str) = zcl_qdrt_json=>to_json(
+      data        = search_result
+      pretty_name = zcl_qdrt_json=>pretty_mode-camel_case ).
+
+    response_entity->set_string_data( json_str ).
+
+*    IF extended_search_results IS NOT INITIAL.
+*      mo_response->set_status( 200 ).
+*    ELSE.
+*      mo_response->set_status( 204 ).
+*    ENDIF.
+
   ENDMETHOD.
 
 ENDCLASS.

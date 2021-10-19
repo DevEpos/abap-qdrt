@@ -22,8 +22,8 @@ CLASS zcl_qdrt_entity_qry_reslt_res DEFINITION
       entity_type  TYPE zif_qdrt_ty_global=>ty_entity_type,
 
       BEGIN OF query_result,
-        rows     TYPE REF TO data,
-        max_rows TYPE zqdrt_no_of_lines,
+        results TYPE REF TO data,
+        count   TYPE zqdrt_no_of_lines,
       END OF query_result,
       data_provider TYPE REF TO zcl_qdrt_entity_data_provider.
 
@@ -93,11 +93,11 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
       query_config = query_config ).
 
     IF query_config-settings-no_data_select = abap_false.
-      query_result-rows = data_provider->get_data( ).
+      query_result-results = data_provider->get_data( ).
     ENDIF.
 
     IF query_config-settings-determine_max_rows = abap_true.
-      query_result-max_rows = data_provider->get_max_row_count( ).
+      query_result-count = data_provider->get_max_row_count( ).
     ENDIF.
 
   ENDMETHOD.
