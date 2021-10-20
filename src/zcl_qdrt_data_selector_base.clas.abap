@@ -74,7 +74,8 @@ CLASS zcl_qdrt_data_selector_base IMPLEMENTATION.
 
     IF aggregation_config->is_empty( ) = abap_false.
       create_result_table( ).
-      CREATE DATA count_result LIKE query_result.
+      ASSIGN query_result->* TO FIELD-SYMBOL(<query_result>).
+      CREATE DATA count_result LIKE <query_result>.
       result = sql_selector->determine_size_for_group_by( count_result ).
     ELSE.
       result = sql_selector->determine_size( ).
