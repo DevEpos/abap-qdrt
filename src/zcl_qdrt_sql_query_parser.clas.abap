@@ -291,8 +291,9 @@ CLASS zcl_qdrt_sql_query_parser IMPLEMENTATION.
           message TYPE string.
 
     SELECT SINGLE * FROM trdir
-    INTO @DATA(dir)
-    WHERE name = @sy-cprog.
+      WHERE subc = '1'
+        and fixpt = @abap_true
+      INTO @DATA(dir).
 
     DATA(l_query_lines) = query_lines.
 
