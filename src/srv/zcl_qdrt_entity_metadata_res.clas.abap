@@ -41,13 +41,15 @@ CLASS zcl_qdrt_entity_metadata_res IMPLEMENTATION.
     IF response_body IS NOT INITIAL.
       mo_response->set_status( cl_rest_status_code=>gc_success_ok ).
       DATA(json) = zcl_qdrt_json=>to_json(
-        data             = response_body
-        compress         = abap_true
-        pretty_name      = zcl_qdrt_json=>pretty_mode-camel_case
-        name_mappings    = VALUE #(
-          ( abap = 'unit_field' json = 'sap:unit' )
-          ( abap = 'semantics'  json = 'sap:semantics' ) ) ).
-      mo_response->create_entity( )->set_string_data( json ).
+        data          = response_body
+        compress      = abap_true
+        pretty_name   = zcl_qdrt_json=>pretty_mode-camel_case
+        name_mappings = VALUE #(
+       ( abap = 'unit_field' json = 'sap:unit' )
+        ( abap = 'semantics'  json = 'sap:semantics' ) ) ).
+      DATA(response_entity) = mo_response->create_entity( ).
+      response_entity->set_content_type( if_rest_media_type=>gc_appl_json ).
+      response_entity->set_string_data( json ).
     ELSE.
       mo_response->set_status( cl_rest_status_code=>gc_success_no_content ).
     ENDIF.

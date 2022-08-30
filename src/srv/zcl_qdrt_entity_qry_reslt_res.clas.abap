@@ -121,7 +121,10 @@ CLASS zcl_qdrt_entity_qry_reslt_res IMPLEMENTATION.
           space_byte TYPE x VALUE '20'. " Space character
     REPLACE ALL OCCURRENCES OF cr_byte IN xjson WITH space_byte IN BYTE MODE.
 
-    mo_response->create_entity( )->set_binary_data( xjson ).
+
+    data(response_entity) = mo_response->create_entity( ).
+    response_entity->set_binary_data( xjson ).
+    response_entity->set_content_type( if_rest_media_type=>gc_appl_json ).
     mo_response->set_status( cl_rest_status_code=>gc_success_ok ).
   ENDMETHOD.
 
