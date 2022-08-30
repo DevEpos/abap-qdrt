@@ -186,7 +186,8 @@ CLASS zcl_qdrt_metadata_util IMPLEMENTATION.
   METHOD is_boolean_type.
     DATA(dtel_doma_descr) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( rollname ) ).
     DATA(fixed_values) = dtel_doma_descr->get_ddic_fixed_values( ).
-    IF lines( fixed_values ) <= 3.
+    DATA(fixed_values_count) = lines( fixed_values ).
+    IF fixed_values_count BETWEEN 2 AND 3.
 
       LOOP AT fixed_values ASSIGNING FIELD-SYMBOL(<fixed_value>).
         IF <fixed_value>-high IS NOT INITIAL.
