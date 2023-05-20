@@ -3,7 +3,7 @@
 
 # abap-qdrt
 
-ABAP Backend for [UI5 Quick Data Reporter](https://github.com/stockbal/quick-data-reporter)
+ABAP Backend for [UI5 Quick Data Reporter](https://github.com/DevEpos/quick-data-reporter)
 
 ## Package overview
 
@@ -32,4 +32,4 @@ The following settings need to be stored in the VS Code settings for the tests t
 
 ## Installation
 
-Install this repository using [abapGit](https://github.com/larshp/abapGit#abapgit).
+Install this repository using [abapGit](https://github.com/abapGit/abapGit#abapgit).
